@@ -1,9 +1,9 @@
 import os
 import subprocess
-import csv
+import csv, json
 import requests, time, threading
 
-from datetime import date
+from datetime import datetime
 from django.http import HttpResponse
 from datetime import datetime
 from django.shortcuts import render, redirect
@@ -25,8 +25,6 @@ def home(request):
     
 
     if request.method == 'POST':
-        print(request.POST)
-        print(request.FILES)
         timeMsg = request.POST['timeMsg']
         msgOut = request.POST['messageInput']
         csv_file = request.FILES['csvFileInput']
@@ -44,8 +42,6 @@ def home(request):
             }
             i = i+1
 
-        print(jsonData)
-
         URL = 'http://app.unifytalk.com.br:8080/message/sendText/evounifytalk'
         HEADERS = {
                 'apikey': 'B6D711FCDE4D4FD5936544120E713976',
@@ -58,10 +54,9 @@ def home(request):
 
             try:
                 for lead in jsonData:
-                    time.sleep(int(timeMsg) * 60)
-                    print(f"{lead} <<>> {jsonData[lead]['name']}")           
+                    print(f"{lead} <<>> {jsonData[lead]['name']} >><< timestamp {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")           
                     data = {
-                        "number": jsonData[lead]['name'],
+                        "number": jsonData[lead]['number'],
                         "options": {
                             "delay": 3000,
                             "presence": "composing"
@@ -70,10 +65,11 @@ def home(request):
                             "text": jsonData[lead]['msg']
                         }
                     }
+                    
                     try:
-                        #print(f"Send Message Simulate!!!")
-                        response = requests.get(URL, headers=HEADERS, param=data)
+                        response = requests.post(URL, headers=HEADERS, data=json.dumps(data))
                         print(response.json())
+                        time.sleep(int(timeMsg) * 60)
                     except Exception as e:
                         print("_httpexecute returned Unknown Error: {}".format(str(e)))
                         return None

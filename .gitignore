@@ -1,2 +1,4 @@
-activeut/__pycache__
-aut/__pycache__
+.activeut/__pycache__/
+.aut/__pycache__/
+__pycache__/
+*.pyc
