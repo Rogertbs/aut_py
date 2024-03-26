@@ -22,6 +22,16 @@
     <form method="post" action="/activeut/home/" enctype="multipart/form-data">
         {% csrf_token %}
     <input class="btn btn-lg btn-light mt-1" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
+    
+    <div class="dropdown mt-4">
+        <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
+            {% for campaign in fetch_campaigns %}
+            {% for item in campaign %}
+            <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
+            {% endfor %}
+            {% endfor %}
+        </select>
+    </div>
 
     <div>
         <div class="mb-3 mt-4">
@@ -53,6 +63,9 @@
 
        const textInput = document.getElementById('messageInput').value;
        formData.append('messageInput', textInput);
+
+       const campaignSelect = document.getElementById('campaignSelect').value;
+       formData.append('campaignSelect', textInput);
 
        formData.append('csvFile', fileInput.files[0]);
        console.log(formData)
