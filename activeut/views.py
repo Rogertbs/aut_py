@@ -24,19 +24,31 @@ def index(request):
 
 @login_required(login_url='login_user')
 def home(request):
+    
+    print(request.POST)
+    
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns()
+    # result = {
+    #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
+    # }
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
 
     if request.method == 'POST':
         timeMsg = request.POST['timeMsg']
         msgOut = request.POST['messageInput']
         csv_file = request.FILES['csvFileInput']
-        processCsv = activeUtController()
-        resultcsv = processCsv._processInput(msgOut, csv_file)
-        result_msg = processCsv._sendMessages(timeMsg, resultcsv)
+        campaign_id = request.POST['campaignSelect']
+         
+        resultcsv = processCsv._processInput(msgOut, campaign_id, csv_file)
+        result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
         print(result_msg)
         
-        return render(request, 'home.html', {"status": "true"})
+        return render(request, 'home.html', result)
     else:
-        return render(request, 'home.html', {"status": "false"})
+        return render(request, 'home.html', result)
 
 
 
