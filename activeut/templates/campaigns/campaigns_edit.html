@@ -6,36 +6,32 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Active Unify Talk</h3>
+          <h3 class="masthead-brand text-center p-4">Campanhas</h3>
         </div>
     </header>
  
       <main role="main" class="inner cover">
+        <p class="lead">Cadastre uma nova campanha</p>
     
-    <form method="post" action="/activeut/home/" enctype="multipart/form-data">
+    <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
-    <label for="formFile" class="form-label">Selecione um arquivo csv</label>
-    <input class="form-control" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
-    
-    <div class="dropdown mt-4">
-        <label for="formFile" class="form-label">Selecione uma campanha</label>
-        <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
-            {% for campaign in fetch_campaigns %}
-            {% for item in campaign %}
-            <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
-            {% endfor %}
-            {% endfor %}
-        </select>
-    </div>
 
     <div>
         <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Insira a mensagem:</label>
-            <textarea class="form-control" id="messageInput" name="messageInput" rows="4"></textarea>
+            <label for="messageInput" class="form-label">Nome da campanha:</label>
+            <input class="form-control" type="text" name="campaigns_name" aria-label="default input example">
         </div>
         <div class="mb-3 mt-4">
-            <label for="timeMsg" class="form-label">Tempo em minutos para ser enviado a próxima mensagem:</label>
-            <input class="form-control" type="number" name="timeMsg" placeholder="1 minuto" aria-label="">
+            <label for="messageInput" class="form-label">Descrição:</label>
+            <input class="form-control" type="text" name="campaigns_describe" aria-label="default input example">
+        </div>
+        <div class="mb-3 mt-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" id="enabled" name="enabled" checked>
+                <label class="form-check-label" for="enabled">
+                  Selecione para ativar a campanha.
+                </label>
+              </div>
         </div>
     </div>
     <p class="lead">

@@ -6,42 +6,46 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Active Unify Talk</h3>
+          <h3 class="masthead-brand text-center p-4">Campanhas</h3>
         </div>
     </header>
  
       <main role="main" class="inner cover">
+        <p class="lead">Cadastre uma nova campanha</p>
     
-    <form method="post" action="/activeut/home/" enctype="multipart/form-data">
-        {% csrf_token %}
-    <label for="formFile" class="form-label">Selecione um arquivo csv</label>
-    <input class="form-control" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
-    
-    <div class="dropdown mt-4">
-        <label for="formFile" class="form-label">Selecione uma campanha</label>
-        <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
-            {% for campaign in fetch_campaigns %}
-            {% for item in campaign %}
-            <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
-            {% endfor %}
-            {% endfor %}
-        </select>
-    </div>
 
     <div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Insira a mensagem:</label>
-            <textarea class="form-control" id="messageInput" name="messageInput" rows="4"></textarea>
-        </div>
-        <div class="mb-3 mt-4">
-            <label for="timeMsg" class="form-label">Tempo em minutos para ser enviado a próxima mensagem:</label>
-            <input class="form-control" type="number" name="timeMsg" placeholder="1 minuto" aria-label="">
-        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">First</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Handle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td colspan="2">Larry the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+        </table>
     </div>
-    <p class="lead">
-        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
-    </p>
-    </form>
+
     </main>
     <footer class="mastfoot mt-5">
         <div class="inner">

@@ -4,6 +4,8 @@ import csv, json
 import requests, time, threading
 
 from activeut.controllers.activeutController import activeUtController
+from activeut.controllers.customersController import customersController
+from activeut.controllers.campaignsController import campaignsController
 
 from datetime import datetime
 from django.http import HttpResponse
@@ -23,12 +25,31 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 @login_required(login_url='login_user')
+def campaigns_create(request):
+    
+    if request.method == 'POST':
+       campaigns = campaignsController()
+       campaigns._createCampaing(request)
+
+    return render(request, 'campaigns.html')
+
+@login_required(login_url='login_user')
+def campaigns_index(request):
+    
+    # if request.method == 'POST':
+    #    campaigns = campaignsController()
+    #    campaigns._createCampaing(request)
+
+    return render(request, 'campaigns/campaigns_index.html')
+
+@login_required(login_url='login_user')
 def home(request):
     
     print(request.POST)
     
     processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    print(fetch_campaigns)
     # result = {
     #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
     # }
@@ -59,6 +80,11 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+
+            user_session_id = request.user.id
+            customers = customersController()
+            customers._setCustomerUser(user_session_id, request)
+
             return redirect('home')
         else:
             messages.error(request, ("Usuario ou senha incorretos!"))

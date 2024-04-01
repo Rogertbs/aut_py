@@ -71,8 +71,8 @@ class activeUtController(Thread):
             return None
         return json_data
     
-    def _fetch_campaigns(self):
-        all_campaigns = campaigns.objects.all()   
+    def _fetch_campaigns(self, request):
+        all_campaigns = campaigns.objects.filter(customer_id=request.session.get('customer_user'))   
         
         json_all_campaigns = {}
         for x in all_campaigns:

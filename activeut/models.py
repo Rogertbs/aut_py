@@ -23,6 +23,7 @@ class campaigns(models.Model):
     campaigns_describre = models.CharField(max_length=100)
     enabled = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    customer_id = models.IntegerField(null=True)
     
 # Create model table campaigns
 class leads_in(models.Model):
@@ -61,6 +62,7 @@ class customers(models.Model):
     contract_id = models.IntegerField(null=True)
     enabled = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    users_id = models.CharField(max_length=255, null=True)
 
 # Create model table contracts plans
 class contracts(models.Model):
@@ -95,3 +97,4 @@ class messagens_campaigns(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+# Todo update created_at in customers auto now add...
