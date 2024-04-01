@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'activeut'
+    'activeut',
 ]
 
 MIDDLEWARE = [
@@ -93,6 +93,8 @@ DATABASES = {
 }
 #python3 manage.py migrate
 #python3 manage.py createsuperuser --username=unify
+#python3 manage.py runserver 0.0.0.0:8888
+
 #unify
 #Un1fy12#
 

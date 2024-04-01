@@ -128,7 +128,7 @@ class activeUtController(Thread):
                                 }
                             }
                             try:
-                                response = requests.post(URL, headers=HEADERS, data=json.dumps(data))
+                                response = requests.post(URL, headers=HEADERS, data=json.dumps(data), timeout=4.001)
                                 print(f"{response.status_code}")
                                 print(f"{response.json()}")
                                 print(f"Sended Data simulate >> {data}")
@@ -155,16 +155,24 @@ class activeUtController(Thread):
                                         obj.save()
                                                                        
                                       
-                                time.sleep(int(time_msg) * 30)
+                                time.sleep(int(time_msg) * 10)
                             except Exception as e:
+                                messageTimestamp = self._convertStamp()
+                                lead_to_update = leads_in.objects.filter(lead_number=json_data[lead]['lead_number'],
+                                                                            id_campaign=json_data[lead]['id_campaign'],
+                                                                            id=json_data[lead]['id_lead']).order_by('-created_at')[:1]
+                                for obj in lead_to_update:
+                                    obj.send_status = 'Api error Timeout'
+                                    obj.send_timestamp = messageTimestamp
+                                    obj.save()
                                 print("_httpexecute returned Unknown Error: {}".format(str(e)))
-                                return None
+                                
                     else:
                         print(f"Cache existe campaign >>> {sending_campaigns}")
-                        return None
+                        
                 except Exception as e:
                     print(f"Error ast_sending >> {e}")
-                    return None
+                    
                 print(f"Deleted cache!!! >> >>> End - Campaign <<< ")
                 cache.delete('campaign_id')
                 
