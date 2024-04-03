@@ -40,6 +40,19 @@ class activeUtController(Thread):
 
     # Save the object back to the database
     object_to_update.save()
+    
+    
+    # TO DO logic get databases while send messages 
+    SELECT le.lead_name, le.lead_number FROM activeut_leads_in AS le 
+    JOIN
+    activeut_campaigns AS camp
+    ON camp.id = le.id_campaign
+    JOIN
+    activeut_messagens_campaigns AS msg
+    ON camp.id = msg.campaign_id
+    WHERE camp.id = 6 AND
+    le.send_status = ''
+    
     """
     
     def _processInput(self, msg_out, campaign_id, csv_file):
@@ -71,8 +84,8 @@ class activeUtController(Thread):
             return None
         return json_data
     
-    def _fetch_campaigns(self):
-        all_campaigns = campaigns.objects.all()   
+    def _fetch_campaigns(self, request):
+        all_campaigns = campaigns.objects.filter(customer_id=request.session.get('customer_user'))   
         
         json_all_campaigns = {}
         for x in all_campaigns:
@@ -99,7 +112,42 @@ class activeUtController(Thread):
                     'apikey': APIKEY_UNIFY,
                     'Content-Type': 'application/json'
                 }
+            
+            # __ Get all leads whit id campaign information param
+            # result = campaigns.objects.extra(
+            #     select={'campaigns_name': 'activeut_campaigns.campaigns_name',
+            #             'lead_name': 'activeut_leads_in.lead_name',
+            #             'lead_number': 'activeut_leads_in.lead_number',
+            #             'send_status': 'activeut_leads_in.send_status',
+            #             'message': 'activeut_messagens_campaigns.message'
+            #             },
+            #     tables=['activeut_leads_in', 'activeut_campaigns', 'activeut_messagens_campaigns'],
+            #     where=['activeut_campaigns.id = 6', 'activeut_leads_in.send_status = ""'],
+            # )
+            
+            from django.db import connection
 
+            cursor = connection.cursor()    
+            cursor.execute("""SELECT camp.campaigns_name, le.lead_name, le.lead_number, le.send_status, msg.message FROM activeut_leads_in AS le 
+                            JOIN
+                            activeut_campaigns AS camp
+                            ON camp.id = le.id_campaign
+                            JOIN
+                            activeut_messagens_campaigns AS msg
+                            ON camp.id = msg.campaign_id
+                            WHERE camp.id = 6 AND
+                            le.send_status = ''""")
+            result = cursor.fetchone()
+            print(result)
+            for row in result:
+                print("AQUI !!!!!")
+                print(row)
+                # print(row['campaigns_name'],
+                #       row['lead_name'],
+                #       row['lead_number'],
+                #       row['send_status'],
+                #       row['message'])
+            return True
             def _ast_sending(**kwargs):
                 try:
                     # Mock cache campaign

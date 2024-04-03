@@ -17,6 +17,61 @@
             <img src="{% static '/images/LogoPlanner_Azul.png' %}" height='50%' width='20%' style="padding: 1rem">
             -->
         </div>
+        
+        {% if user.is_authenticated %}
+        <!-- HTML content to show when the user is logged in -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown"> 
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Campanhas
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="{% url "campaigns_index" %}">Listar</a></li>
+                            <li><a class="dropdown-item" href="{% url "campaigns_index" %}">Editar</a></li>
+                            <li><a class="dropdown-item" href="{% url "campaigns_create" %}">Adicionar</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown"> 
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Mensagens
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="{% url "campaigns_index" %}">Listar</a></li>
+                            <li><a class="dropdown-item" href="{% url "campaigns_index" %}">Editar</a></li>
+                            <li><a class="dropdown-item" href="{% url "messages_create" %}">Adicionar</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sair
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="{% url "logout_user" %}">Logout</a></li>
+                    </ul>
+                </li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+        <!-- Additional content for authenticated users -->
+        {% else %}
+            <!-- HTML content to show when the user is not logged in -->
+            
+        {% endif %}
+
+
         {% if messages %}
         </br>
         {% for message in messages %}

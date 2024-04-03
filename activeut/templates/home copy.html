@@ -3,6 +3,34 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url "campaigns" %}">Campanhas</a>
+        <a class="navbar-brand" href="#">Mensagens</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Sair
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item" href="{% url "logout_user" %}">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+<div class="w-100 d-flex justify-content-end">
+    <button class="btn my-2 my-sm-0 btn btn-secondary" type="submit">
+        <a class="text-white text-decoration-none" href="{% url "logout_user" %}">Logout</a>
+    </button>
+</div>
+
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
@@ -11,14 +39,13 @@
     </header>
  
       <main role="main" class="inner cover">
+        <p class="lead">Insira o CSV e a mensagem que será envida!</p>
     
     <form method="post" action="/activeut/home/" enctype="multipart/form-data">
         {% csrf_token %}
-    <label for="formFile" class="form-label">Selecione um arquivo csv</label>
-    <input class="form-control" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
+    <input class="btn btn-lg btn-light mt-1" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
     
     <div class="dropdown mt-4">
-        <label for="formFile" class="form-label">Selecione uma campanha</label>
         <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
             {% for campaign in fetch_campaigns %}
             {% for item in campaign %}

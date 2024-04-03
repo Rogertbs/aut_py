@@ -4,6 +4,9 @@ import csv, json
 import requests, time, threading
 
 from activeut.controllers.activeutController import activeUtController
+from activeut.controllers.customersController import customersController
+from activeut.controllers.campaignsController import campaignsController
+from activeut.controllers.messagesController import messagesController
 
 from datetime import datetime
 from django.http import HttpResponse
@@ -22,13 +25,74 @@ active_threads = []
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
+
+@login_required(login_url='login_user')
+def messages_create(request):
+
+    result = None
+    
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
+    
+    if request.method == 'POST':
+        print(request.POST)
+        print(request.FILES['media'])
+        messages = messagesController()
+        res = messages._createMessage(request)
+        print(res)
+    
+    if result is True:
+
+        return render(request, 'campaigns/campaigns_index.html', result)
+
+    return render(request, 'messages/messages_create.html', result)
+
+
+@login_required(login_url='login_user')
+def campaigns_create(request):
+    
+    result = None
+    
+    if request.method == 'POST':
+       campaigns = campaignsController()
+       result = campaigns._createCampaing(request)
+    
+    if result is True:
+        processCsv = activeUtController()
+        fetch_campaigns = processCsv._fetch_campaigns(request)
+        print(fetch_campaigns)
+
+        result = {
+            'fetch_campaigns': [fetch_campaigns]
+        }
+        return render(request, 'campaigns/campaigns_index.html', result)
+
+    return render(request, 'campaigns/campaigns_create.html')
+
+@login_required(login_url='login_user')
+def campaigns_index(request):
+    
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    print(fetch_campaigns)
+
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
+
+    return render(request, 'campaigns/campaigns_index.html', result)
+
 @login_required(login_url='login_user')
 def home(request):
     
     print(request.POST)
     
     processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    print(fetch_campaigns)
     # result = {
     #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
     # }
@@ -59,6 +123,11 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+
+            user_session_id = request.user.id
+            customers = customersController()
+            customers._setCustomerUser(user_session_id, request)
+
             return redirect('home')
         else:
             messages.error(request, ("Usuario ou senha incorretos!"))
