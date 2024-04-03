@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand text-center p-4">Criar Mensagem</h3>
+        </div>
+    </header>
+ 
+      <main role="main" class="inner cover">
+        <p class="lead">Cadastre uma nova mensagem</p>
+    
+    <form method="post" action="/activeut/messages_create/" enctype="multipart/form-data">
+        {% csrf_token %}
+
+    <div>
+        <div class="dropdown mt-4">
+            <label for="formFile" class="form-label">Selecione uma campanha</label>
+            <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
+                {% for campaign in fetch_campaigns %}
+                {% for item in campaign %}
+                <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3 mt-4">
+            <label for="messageInput" class="form-label">Descrição da mensagem:</label>
+            <input class="form-control" type="text" name="message_description" aria-label="default input example">
+        </div>
+        <div class="mb-3 mt-4">
+            <label for="messageInput" class="form-label">Mensagem:</label>
+            <textarea class="form-control" type="text" name="message" aria-label="default input example" rows="5"></textarea>
+        </div>
+        <div class="mb-3 mt-4">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="RadioText" id="RadioText">
+                <label class="form-check-label" for="flexRadioDefault1">
+                  Texto
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="RadioMedia" id="RadioMedia">
+                <label class="form-check-label" for="flexRadioDefault2">
+                  Mídia
+                </label>
+              </div>
+        </div>
+        <div class="mb-3 mt-4" id="hiddenDivMedia">
+            <h2>Upload Media</h2>
+
+                <label for="media">Select file:</label><br>
+                <input type="file" id="media" name="media"><br><br>
+               
+
+        </div>
+    </div>
+    <p class="lead">
+        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
+    </p>
+    </form>
+    </main>
+    <footer class="mastfoot mt-5">
+        <div class="inner">
+          <p>Active messages by UnifyTalk.</p>
+        </div>
+      </footer>
+</div>
+
+<script>
+    function uploadCSV() {
+       
+       const fileInput = document.getElementById('csvFileInput');
+       const formData = new FormData();
+
+       const textInput = document.getElementById('messageInput').value;
+       formData.append('messageInput', textInput);
+
+       const campaignSelect = document.getElementById('campaignSelect').value;
+       formData.append('campaignSelect', textInput);
+
+       formData.append('csvFile', fileInput.files[0]);
+       console.log(formData)
+       try {
+           const response = fetch('/activeut/home', {
+               method: 'POST',
+               body: formData
+           });
+           console.log('File uploaded successfully.');
+           //alert("O dados foram enviados com sucesso!")
+       } catch (error) {
+           console.error('Error uploading file:', error);
+       }
+   }
+
+   // _______ Bloco referente ao input de mídia na mensagem _______________________
+   const showRadioMedia = document.getElementById('RadioMedia');
+   // Get reference to the hidden content
+   const hiddenContent = document.getElementById('hiddenDivMedia');
+ 
+   // Add event listener to the radio button
+   showRadioMedia.addEventListener('click', function() {
+     // Check if the radio button is checked
+     if (showRadioMedia.checked) {
+       // If checked, display the hidden content
+       console.log("Media Block show")
+       hiddenContent.style.display = 'block';
+     } else {
+       // If not checked, hide the hidden content
+       hiddenContent.style.display = 'none';
+     }
+   });
+
+   const showTextMedia = document.getElementById('RadioText');
+   // Get reference to the hidden content
+   const hiddenContent1 = document.getElementById('hiddenDivMedia');
+ 
+   // Add event listener to the radio button
+   showTextMedia.addEventListener('click', function() {
+     // Check if the radio button is checked
+     if (showTextMedia.checked) {
+       // If checked, display the hidden content
+       console.log("Text none")
+       hiddenContent1.style.display = 'none';
+     } else {
+       // If not checked, hide the hidden content
+      hiddenContent1.style.display = 'block';
+     }
+   });
+   // _______ Bloco referente ao input de mídia na mensagem _______________________
+
+   // Functions olds
+   function loading() {
+        document.getElementById('content_table').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+        return true;
+    }
+
+    var selectElement = document.getElementById("user");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ user }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("exten");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ exten }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("server");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ server }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("channel");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ channel }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+</script>
+
+<script>
+    function loading() {
+        document.getElementById('content_table').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+        return true;
+    }
+
+    var selectElement = document.getElementById("user");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ user }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("exten");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ exten }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("server");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ server }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+
+    var selectElement = document.getElementById("channel");
+    for (var i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === "{{ channel }}") {
+            selectElement.options[i].selected = true;
+            break;
+        }
+    }
+</script>
+
+
+<div id="loader" style="display: none">
+    <div class="centered-content">
+        <div class="progress" style="width: 30em;">
+            <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="loading-text">Carregando...</div>
+    </div>
+</div>
+
+<style>
+    #hiddenDivMedia {
+        display: none;
+      }
+
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .centered-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .custom-spinner {
+        color: #b00707;
+        width: 12rem;
+        height: 12rem;
+    }
+
+    .loading-text {
+        margin-top: 10px;
+        color: #b00707;
+    }
+</style>
+
+<style>
+    table {
+        border-spacing: unset !important;
+        border-collapse: unset !important;
+    }
+
+    table tr:last-child td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tr:last-child:hover td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tbody tr td {
+        border: 1px solid #c3c3c3 !important;
+    }
+</style>
+{% endblock %}

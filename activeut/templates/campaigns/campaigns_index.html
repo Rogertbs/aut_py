@@ -11,36 +11,34 @@
     </header>
  
       <main role="main" class="inner cover">
-        <p class="lead">Cadastre uma nova campanha</p>
+        <p class="lead">Lista de Campanhas</p>
     
 
     <div>
         <table class="table table-hover">
             <thead>
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">First</th>
-                  <th scope="col">Last</th>
-                  <th scope="col">Handle</th>
+                  <th scope="col">id</th>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Descrição</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
+                {% for campaign in fetch_campaigns %}
+                {% for item in campaign %}
                 <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td colspan="2">Larry the Bird</td>
-                  <td>@twitter</td>
+                <td scope="row" id="" value="{{ item.id }}">{{ item.id }}</td>
+                <td id="" value="{{ item.id }}">{{ item.campaigns_name }}</td>
+                <td id="" value="{{ item.id }}">{{ item.campaigns_describre }}</td>
+                {% if item.enabled == 1 %}
+                <td id="" value="{{ item.id }}"><span class="badge text-bg-success">Ativo</span></td>
+                {% elif item.enabled == 0 or item.enabled == null %}
+                <td id="" value="{{ item.id }}"><span class="badge text-bg-danger">Desativado</span></td>
+                {% endif %}
+                
+                {% endfor %}
+                {% endfor %}
                 </tr>
               </tbody>
         </table>
