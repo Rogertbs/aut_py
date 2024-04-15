@@ -30,6 +30,7 @@ class messagesController(Thread):
             campaign_id = request.POST['campaignSelect']
             message_description = request.POST['message_description']
             message = request.POST['message']
+            time_msg = request.POST['timeMsg']
             created_at = self._convertStamp()
             customer_id = request.session.get('customer_user')
             media_type = 'media' if request.POST['RadioMedia'] == 'on' else 'text'
@@ -39,6 +40,7 @@ class messagesController(Thread):
             new_campaign = messagens_campaigns(campaign_id=campaign_id,
                                     message_description=message_description,
                                         message=message,
+                                        time_msg=time_msg,
                                         created_at=created_at,
                                         customer_id=customer_id,
                                         media_type=media_type,

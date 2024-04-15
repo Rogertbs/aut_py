@@ -86,6 +86,18 @@ def campaigns_index(request):
     return render(request, 'campaigns/campaigns_index.html', result)
 
 @login_required(login_url='login_user')
+def handle_campaign(request):
+    
+    print(f"HANDLECAMPAING  >>> {request}")
+
+    if request.method == 'POST':
+     handleCampaign = activeUtController()
+     result_msg = handleCampaign._sendMessages(request)
+    #print(result_msg)
+    
+    return render(request, 'campaigns/campaigns_index.html')
+
+@login_required(login_url='login_user')
 def home(request):
     
     print(request.POST)
@@ -107,8 +119,8 @@ def home(request):
         campaign_id = request.POST['campaignSelect']
          
         resultcsv = processCsv._processInput(msgOut, campaign_id, csv_file)
-        result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
-        print(result_msg)
+        #result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
+        #print(result_msg)
         
         return render(request, 'home.html', result)
     else:

@@ -3,7 +3,7 @@ from django.db import models
 """
 Create Class Model
 Create migration make
-python3 manage.py makemigrations activeut (--empty to create new migrate empty)
+python3 manage.py makemigrations activeut --empty (to create new migrate empty)
 python3 manage.py migrate activeut
 
 show sql migrate
@@ -95,6 +95,7 @@ class messagens_campaigns(models.Model):
     media_type = models.CharField(max_length=50, null=True)
     media_name = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    time_msg = models.IntegerField(null=True)
 
 
 # Todo update created_at in customers auto now add...
