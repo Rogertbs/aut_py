@@ -89,7 +89,11 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'Andr0m3d@0@#',
         'HOST': 'localhost',
-        'PORT': '3306',  
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },  
     }
 }
 #python3 manage.py migrate

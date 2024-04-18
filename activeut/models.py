@@ -24,6 +24,7 @@ class campaigns(models.Model):
     enabled = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     customer_id = models.IntegerField(null=True)
+    instance_id = models.IntegerField(null=True)
     
 # Create model table campaigns
 class leads_in(models.Model):
@@ -89,7 +90,7 @@ class messagens_campaigns(models.Model):
     customer_id = models.IntegerField(null=True)
     campaign_id = models.IntegerField(null=True)
     instance_id = models.IntegerField(null=True)
-    message = models.CharField(max_length=255, null=True)
+    message = models.CharField(max_length=255, null=True, db_collation='utf8mb4_unicode_ci')
     message_description = models.CharField(max_length=200, null=True)
     media_url = models.CharField(max_length=255, null=True)
     media_type = models.CharField(max_length=50, null=True)
