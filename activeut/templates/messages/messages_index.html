@@ -6,12 +6,12 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Campanhas</h3>
+          <h3 class="masthead-brand text-center p-4">Mensagens</h3>
         </div>
     </header>
  
       <main role="main" class="inner cover">
-        <p class="lead">Lista de Campanhas</p>
+        <p class="lead">Lista de Mensagens</p>
     
 
     <div>
@@ -19,34 +19,27 @@
             <thead class="table-dark">
                 <tr>
                   <th scope="col">id</th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Descrição</th>
-                  <th scope="col">Status</th>
+                  <th scope="col">Campanha</th>
+                  <th scope="col">Assunto</th>
+                  <th scope="col">Mensagem</th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Nome da Mídia</th>
+                  <th scope="col">Tempo p/ a próx. Msg</th>
                 </tr>
               </thead>
-              <tbody>
-                {% for campaign in fetch_campaigns %}
-                {% for item in campaign %}
-                <tr>
-                <td scope="row" id="" value="{{ item.id }}">{{ item.id }}</td>
-                <td id="" value="{{ item.id }}">{{ item.campaigns_name }}</td>
-                <td id="" value="{{ item.id }}">{{ item.campaigns_describre }}</td>
-                <td>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="handleCampaign"
-                         data-url="{% url 'handle_campaign' %}" data-id="{{ item.id }}"
-                          {% if item.enabled == 1 %}checked{% endif %}>
-                          {% if item.enabled == 1 %}
-                          <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-success">Ativo</span></label>
-                          {% elif item.enabled == 0 or item.enabled == null %}
-                          <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-danger">Desativado</span></label>
-                          {% endif %}
-                      </div>
-                </td>
-                
-                {% endfor %}
-                {% endfor %}
-                </tr>
+            {% for message_dict in fetch_messages %}
+            {% for key, message in message_dict.items %}
+                  <tr>
+                      <td scope="row">{{ key }}</td>
+                      <td >{{ message.campaigns_name }}</td>
+                      <td >{{ message.message_description }}</td>
+                      <td >{{ message.message }}</td>
+                      <td >{{ message.media_type }}</td>
+                      <td >{{ message.media_name }}</td>
+                      <td >{{ message.time_msg }}</td>
+                  </tr>
+            {% endfor %}
+            {% endfor %}
               </tbody>
         </table>
     </div>
@@ -90,47 +83,6 @@
     });
 
 </script>
-
-<script>
-    function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
-    }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-</script>
-
 
 <div id="loader" style="display: none">
     <div class="centered-content">

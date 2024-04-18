@@ -29,12 +29,12 @@
         </div>
 
         <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Descrição da mensagem:</label>
-            <input class="form-control" type="text" name="message_description" aria-label="default input example">
+            <label for="messageDescription" class="form-label">Descrição da mensagem:</label>
+            <input class="form-control" type="text" name="messageDescription" aria-label="default input example">
         </div>
         <div class="mb-3 mt-4">
             <label for="messageInput" class="form-label">Mensagem:</label>
-            <textarea class="form-control" type="text" name="message" aria-label="default input example" rows="5"></textarea>
+            <textarea class="form-control" type="text" name="messageInput" aria-label="default input example" rows="5"></textarea>
         </div>
         <div class="mb-3 mt-4">
             <label for="timeMsg" class="form-label">Tempo em minutos para ser enviado a próxima mensagem:</label>
@@ -84,6 +84,9 @@
        const textInput = document.getElementById('messageInput').value;
        formData.append('messageInput', textInput);
 
+       const messageDescription = document.getElementById('messageDescription').value;
+       formData.append('messageDescription', messageDescription);
+
        const campaignSelect = document.getElementById('campaignSelect').value;
        formData.append('campaignSelect', textInput);
 
@@ -113,6 +116,7 @@
        // If checked, display the hidden content
        console.log("Media Block show")
        hiddenContent.style.display = 'block';
+       showTextMedia.checked = false;
      } else {
        // If not checked, hide the hidden content
        hiddenContent.style.display = 'none';
@@ -130,6 +134,7 @@
        // If checked, display the hidden content
        console.log("Text none")
        hiddenContent1.style.display = 'none';
+       showRadioMedia.checked = false;
      } else {
        // If not checked, hide the hidden content
       hiddenContent1.style.display = 'block';

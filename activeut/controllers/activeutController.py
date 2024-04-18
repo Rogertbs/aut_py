@@ -7,6 +7,7 @@ from django.core.cache import cache
 from activeut.models import campaigns
 from activeut.models import leads_in
 from activeut.models import instances
+from activeut.models import messagens_campaigns
 from datetime import datetime
 from django.utils import timezone
 from django.db import connection
@@ -58,8 +59,8 @@ class activeUtController(Thread):
     
     """
     
-    def _processInput(self, msg_out, campaign_id, csv_file):
-        print(f"{msg_out} {csv_file} {campaign_id}")
+    def _processInput(self, campaign_id, csv_file):
+        print(f"{csv_file} {campaign_id}")
         try:
             decoded_file = csv_file.read().decode('utf-8').splitlines()
             reader = csv.reader(decoded_file)
@@ -77,7 +78,7 @@ class activeUtController(Thread):
                     "id_campaign": int(campaign_id),
                     "lead_name": str(tmp[0]),
                     "lead_number": str(tmp[1]),
-                    'msg': msg_out.replace("{name}", str(tmp[0])),
+                    #'msg': msg_out.replace("{name}", str(tmp[0])),
                     "id_lead": int(new_lead.id)
                 }
                 i = i+1
@@ -92,8 +93,8 @@ class activeUtController(Thread):
         
         json_all_campaigns = {}
         for x in all_campaigns:
-            print(x.id)
-            print(x.campaigns_name)
+            #print(x.id)
+            #print(x.campaigns_name)
             json_all_campaigns[x] = {
                 "id": x.id,
                 "campaign_name": x.campaigns_name,
@@ -101,7 +102,73 @@ class activeUtController(Thread):
             }
         print(type(json_all_campaigns))
         return json_all_campaigns
+    
+    def _fetch_instances(self, request):
+        all_instances = instances.objects.filter(id_customer=request.session.get('customer_user'))   
         
+        json_all_instances = {}
+        for x in all_instances:
+            print(x.id)
+            print(x.instance_name)
+            json_all_instances[x] = {
+                "id": x.id,
+                "instance_name": x.instance_name
+            }
+        print(type(json_all_instances))
+        return json_all_instances
+    
+    def _fetch_messages(self, request):
+        id_customer=request.session.get('customer_user')
+        # Get infos all messages
+        cursor = connection.cursor()
+        fetch_messages = (f"SELECT m.id, c.campaigns_name, m.message, m.message_description, m.media_type, m.media_name, m.time_msg "
+                          f"FROM activeut_messagens_campaigns AS m "
+                          f"JOIN activeut_campaigns AS c "
+                          f"ON m.campaign_id = c.id "
+                          f"WHERE m.customer_id = {id_customer}")
+        
+        cursor.execute(fetch_messages)
+        all_messages = cursor.fetchall()
+        connection.close()   
+        
+        json_all_messages = {}
+
+        for campaign in all_messages:
+            id, campaigns_name, message, message_description, media_type, media_name, time_msg = campaign
+            json_all_messages[id] = {
+                'id': id,
+                'campaigns_name': campaigns_name,
+                'message_description': message_description,
+                'message': message,
+                'media_type': media_type,
+                'media_name': media_name,
+                'time_msg': time_msg
+        }
+
+        return json_all_messages
+
+    def _fetch_leads(self, request):
+        print(request.POST)
+        if request.method == 'POST':
+            campaign_id = request.POST['campaignSelect']
+            messages = leads_in.objects.filter(id_campaign=campaign_id)   
+            
+            json_messages = {}
+            for x in messages:
+                print(x.id)
+                print(x.lead_name)
+                json_messages[x] = {
+                    "id": x.id,
+                    "lead_name": x.lead_name,
+                    "lead_number": x.lead_number,
+                    "send_status": x.send_status,
+                    "send_timestamp": x.send_timestamp
+                }
+            print(type(json_messages))
+            print(json_messages)
+            return json_messages
+        else:
+            return ''
        
     def _sendMessages(self, request):
 
@@ -194,6 +261,8 @@ class activeUtController(Thread):
    
                     print(f"<<<<< Campaign {campaign_id} Is deleted cache >>>")
                     print(f"<<< Current thread >>> {thread_id} >>>")
+                # Set campaign disabled in database
+                self._handleCampaign(campaign_id, handler)
                 return 0
 
             # __ Get all leads whit id campaign information param
@@ -231,6 +300,8 @@ class activeUtController(Thread):
                     print(f"Json new >> {json_data_new} >> Campaing_id >> {campaign_id}")
                 
             except Exception as e:
+                # Set campaign disabled in database
+                self._handleCampaign(campaign_id, 0)
                 print(f"Error for >> {e}")
             
            
@@ -240,15 +311,11 @@ class activeUtController(Thread):
                     #import pdb; pdb.set_trace()
                     # Mock cache campaign
                     campaign_id = kwargs['campaign_id']
-                    #campaign_name = kwargs['campaign_name']
                     json_data = kwargs['json_data']
                     time_msg = kwargs['time_msg']
                     sending_campaigns = cache.get(str(campaign_id))
 
                     if sending_campaigns is None:
-                        # Set cache name campaign 
-                        # to do set timeout cache multiple time_msg variable***
-                        #cache.set(str(campaign_id), campaign_id, timeout=13600)
                         
                         # initiate loop for sended messagens campaign
                         for lead in json_data:
@@ -301,7 +368,7 @@ class activeUtController(Thread):
                                                                              id_campaign=json_data[lead]['id_campaign'],
                                                                              id=json_data[lead]['id_lead']).order_by('-created_at')[:1]
                                     for obj in lead_to_update:
-                                        obj.send_status = res['response']['message'][0]
+                                        obj.send_status = res['response']['message'][0]['exists']
                                         obj.send_timestamp = messageTimestamp
                                         obj.save()
                                                                        
@@ -324,24 +391,33 @@ class activeUtController(Thread):
                         
                 except Exception as e:
                     print(f"Error ast_sending >> {e}")
-                    
+                    # Set campaign disabled in database
+                    self._handleCampaign(campaign_id, 0)    
+                    print(f"Deleted cache!!! >> >>> End - Campaign <<< ")
+                    cache.delete(str(campaign_id))
+
+                # Set campaign disabled in database
+                self._handleCampaign(campaign_id, 0)    
                 print(f"Deleted cache!!! >> >>> End - Campaign <<< ")
-                #cache.delete(str(campaign_id))
+                cache.delete(str(campaign_id))
                 
-            try:       
-                #campaign_thread = threading.Thread(target=_ast_sending, kwargs={'json_data' : json_data_new, 'time_msg': time_msg, 'campaign_id': campaign_id}).start()
+            try:
                 campaign_thread = multiprocessing.Process(target=_ast_sending, kwargs={'json_data' : json_data_new, 'time_msg': time_msg, 'campaign_id': campaign_id}, name=str(campaign_id))
                 campaign_thread.start()
                 print(f"Initiate thread campaign {cache.get(str(campaign_id))} >> {threading.current_thread()} >> Ident thread >> {threading.get_ident} \n")
-                cache.set(str(campaign_id), campaign_thread.pid, timeout=13600)
+                cache.set(str(campaign_id), campaign_thread.pid, timeout=86400) # 24 hours
                 
                 print(f">>>>>> Thread Seted >>>> {cache.get(str(campaign_id))}")
                         
             except Exception as e:
+                # Set campaign disabled in database
+                self._handleCampaign(campaign_id, 0)
                 print(f"returned Error initiate Thread: {e}")
                 return None
  
         except Exception as e:
+            # Set campaign disabled in database
+            self._handleCampaign(campaign_id, 0)
             print(f"Error in ast sended >> {e}")
             return None
         print("ok-end")

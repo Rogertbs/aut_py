@@ -6,51 +6,67 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Campanhas</h3>
+          <h3 class="masthead-brand text-center p-4">Mensagens</h3>
         </div>
     </header>
  
       <main role="main" class="inner cover">
-        <p class="lead">Lista de Campanhas</p>
+        <p class="lead">Lista de Mensagens</p>
     
+    <form class="col-12 my-2 my-lg-0" action="{% url "leads_index" %}" method=POST
+        onsubmit="return loading()">
+        {% csrf_token %}
 
-    <div>
-        <table class="table table-hover" id="campaignTable">
-            <thead class="table-dark">
-                <tr>
-                  <th scope="col">id</th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Descrição</th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody>
+        <p class="lead">
+            <button class="btn btn-lg btn-secondary" type="submit">Pesquisar</button>
+        </p>
+
+        <div class="mb-4 dropdown mt-4">
+            <label for="formFile" class="form-label">Selecione uma campanha</label>
+            <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
                 {% for campaign in fetch_campaigns %}
                 {% for item in campaign %}
-                <tr>
-                <td scope="row" id="" value="{{ item.id }}">{{ item.id }}</td>
-                <td id="" value="{{ item.id }}">{{ item.campaigns_name }}</td>
-                <td id="" value="{{ item.id }}">{{ item.campaigns_describre }}</td>
-                <td>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="handleCampaign"
-                         data-url="{% url 'handle_campaign' %}" data-id="{{ item.id }}"
-                          {% if item.enabled == 1 %}checked{% endif %}>
-                          {% if item.enabled == 1 %}
-                          <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-success">Ativo</span></label>
-                          {% elif item.enabled == 0 or item.enabled == null %}
-                          <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-danger">Desativado</span></label>
-                          {% endif %}
-                      </div>
-                </td>
-                
+                <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
                 {% endfor %}
                 {% endfor %}
-                </tr>
-              </tbody>
-        </table>
-    </div>
+            </select>
+        </div>
+    
 
+        <div>
+            <table class="table table-hover" id="campaignTable">
+                <thead class="table-dark">
+                    <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Número</th>
+                    <th scope="col">Status do envio</th>
+                    <th scope="col">Data-Hora / Envio</th>
+                    </tr>
+                </thead>
+                {% for lead_dict in fetch_leads %}
+                {% for key, lead in lead_dict.items %}
+                    <tr>
+                        <td scope="row">{{ lead.id }}</td>
+                        <td >{{ lead.lead_name }}</td>
+                        <td >{{ lead.lead_number }}</td>
+                        {% if lead.send_status == 'PENDING' %}
+                        <td><span class="badge text-bg-success">Envidado</span></td>
+                        {% elif lead.send_status == 'False' %}
+                        <td><span class="badge text-bg-warning">WhatsApp Não Existe</span></td>
+                        {% elif lead.send_status == '' %}
+                        <td><span class="badge text-bg-light">Pendente</span></td>
+                        {% else %}
+                        <td><span class="badge text-bg-danger">Falha de Envio</span></td>
+                        {% endif %}
+                        <td >{{ lead.send_timestamp }}</td>
+                    </tr>
+                {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
     </main>
     <footer class="mastfoot mt-5">
         <div class="inner">
@@ -89,48 +105,35 @@
         });
     });
 
+
+
+    // Campaign Select
+    // $(document).ready(function() {
+    //     $('#campaignSelect').change(function() {
+    //         var campaignId = $(this).val();
+    //         console.log(campaignId)
+    //         $.ajax({
+    //             url: 'leads_index_table',  // Django view URL to fetch messages
+    //             method: 'POST',
+    //             data: {
+    //                 'campaign_id': campaignId
+    //             },
+    //             success: function(data) {
+    //                 console.log("success leads_table")
+    //                 //populateTable(data);
+    //             },
+    //             error: function(error) {
+    //                 console.log('Error:', error);
+    //             }
+    //         });
+    //     });
+    
+    // // function populate
+    
+    // });
+
+
 </script>
-
-<script>
-    function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
-    }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-</script>
-
 
 <div id="loader" style="display: none">
     <div class="centered-content">

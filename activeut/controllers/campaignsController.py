@@ -18,15 +18,15 @@ class campaignsController(Thread):
         try:
             campaigns_name = request.POST['campaigns_name']
             campaigns_describre = request.POST['campaigns_describe']
-            enabled = request.POST['enabled'] if request.POST['enabled'] == 1 else 0
+            instance_id=request.POST['instanceSelect']
             created_at = self._convertStamp()
             customer_id = request.session.get('customer_user')
-            # Create an instance of YourModel
             new_campaign = campaigns(campaigns_name=campaigns_name,
                                     campaigns_describre=campaigns_describre,
-                                        enabled=enabled,
+                                        enabled=0,
                                         created_at=created_at,
-                                        customer_id=customer_id)
+                                        customer_id=customer_id,
+                                        instance_id=instance_id)
 
             # Save the instance to the database
             result = new_campaign.save()

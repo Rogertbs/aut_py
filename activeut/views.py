@@ -25,6 +25,56 @@ active_threads = []
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
+@login_required(login_url='login_user')
+def leads_index(request):
+
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
+    # fetch_leads = processCsv._fetch_leads(request)
+    # result = {
+    #         'fetch_leads': [fetch_leads],
+    #         'fetch_campaigns': [fetch_campaigns]
+    #     }
+    
+    if request.method == 'POST':
+        fetch_leads = processCsv._fetch_leads(request)
+        result = {
+            'fetch_leads': [fetch_leads],
+            'fetch_campaigns': [fetch_campaigns]
+        }
+        return render(request, 'leads/leads_index.html', result)
+    
+    return render(request, 'leads/leads_index.html', result)
+
+
+@login_required(login_url='login_user')
+def leads_in(request):
+    
+    print(request.POST)
+    
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
+    # result = {
+    #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
+    # }
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
+
+    if request.method == 'POST':
+        csv_file = request.FILES['csvFileInput']
+        campaign_id = request.POST['campaignSelect']
+         
+        resultcsv = processCsv._processInput(campaign_id, csv_file)
+        #result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
+        #print(result_msg)
+        
+        return render(request, 'leads/leads_in.html', result)
+    else:
+        return render(request, 'leads/leads_in.html', result)
 
 @login_required(login_url='login_user')
 def messages_create(request):
@@ -38,23 +88,44 @@ def messages_create(request):
     }
     
     if request.method == 'POST':
-        print(request.POST)
-        print(request.FILES['media'])
         messages = messagesController()
-        res = messages._createMessage(request)
-        print(res)
+        result = messages._createMessage(request)
     
     if result is True:
+        processCsv = activeUtController()
+        fetch_campaigns = processCsv._fetch_campaigns(request)
+        result = {
+            'fetch_campaigns': [fetch_campaigns]
+        }
 
-        return render(request, 'campaigns/campaigns_index.html', result)
+        return render(request, 'messages/messages_index.html', result)
 
     return render(request, 'messages/messages_create.html', result)
+
+
+@login_required(login_url='login_user')
+def messages_index(request):
+    
+    processCsv = activeUtController()
+    fetch_messages = processCsv._fetch_messages(request)
+
+    result = {
+        'fetch_messages': [fetch_messages]
+    }
+    
+    return render(request, 'messages/messages_index.html', result)
 
 
 @login_required(login_url='login_user')
 def campaigns_create(request):
     
     result = None
+
+    processCsv = activeUtController()
+    fetch_instances = processCsv._fetch_instances(request)
+    result_instances = {
+        'fetch_instances': [fetch_instances]
+    }
     
     if request.method == 'POST':
        campaigns = campaignsController()
@@ -63,14 +134,13 @@ def campaigns_create(request):
     if result is True:
         processCsv = activeUtController()
         fetch_campaigns = processCsv._fetch_campaigns(request)
-        print(fetch_campaigns)
 
         result = {
             'fetch_campaigns': [fetch_campaigns]
         }
         return render(request, 'campaigns/campaigns_index.html', result)
 
-    return render(request, 'campaigns/campaigns_create.html')
+    return render(request, 'campaigns/campaigns_create.html', result_instances)
 
 @login_required(login_url='login_user')
 def campaigns_index(request):
@@ -82,6 +152,7 @@ def campaigns_index(request):
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
+    print(result)
 
     return render(request, 'campaigns/campaigns_index.html', result)
 
