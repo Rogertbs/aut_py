@@ -72,7 +72,8 @@ def leads_in(request):
         #result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
         #print(result_msg)
         
-        return render(request, 'leads/leads_in.html', result)
+        return render(request, 'campaigns/campaigns_index.html', result)
+        #return render(request, 'leads/leads_in.html', result)
     else:
         return render(request, 'leads/leads_in.html', result)
 
@@ -98,7 +99,8 @@ def messages_create(request):
             'fetch_campaigns': [fetch_campaigns]
         }
 
-        return render(request, 'messages/messages_index.html', result)
+        return render(request, 'leads/leads_in.html', result)
+        #return render(request, 'messages/messages_index.html', result)
 
     return render(request, 'messages/messages_create.html', result)
 
@@ -138,7 +140,8 @@ def campaigns_create(request):
         result = {
             'fetch_campaigns': [fetch_campaigns]
         }
-        return render(request, 'campaigns/campaigns_index.html', result)
+        return render(request, 'messages/messages_create.html', result)
+        #return render(request, 'campaigns/campaigns_index.html', result)
 
     return render(request, 'campaigns/campaigns_create.html', result_instances)
 
