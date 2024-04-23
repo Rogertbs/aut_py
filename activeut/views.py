@@ -33,11 +33,6 @@ def leads_index(request):
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
-    # fetch_leads = processCsv._fetch_leads(request)
-    # result = {
-    #         'fetch_leads': [fetch_leads],
-    #         'fetch_campaigns': [fetch_campaigns]
-    #     }
     
     if request.method == 'POST':
         fetch_leads = processCsv._fetch_leads(request)
@@ -53,7 +48,7 @@ def leads_index(request):
 @login_required(login_url='login_user')
 def leads_in(request):
     
-    print(request.POST)
+    #print(request.POST)
     
     processCsv = activeUtController()
     fetch_campaigns = processCsv._fetch_campaigns(request)
@@ -69,11 +64,8 @@ def leads_in(request):
         campaign_id = request.POST['campaignSelect']
          
         resultcsv = processCsv._processInput(campaign_id, csv_file)
-        #result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
-        #print(result_msg)
         
         return render(request, 'campaigns/campaigns_index.html', result)
-        #return render(request, 'leads/leads_in.html', result)
     else:
         return render(request, 'leads/leads_in.html', result)
 
@@ -100,7 +92,6 @@ def messages_create(request):
         }
 
         return render(request, 'leads/leads_in.html', result)
-        #return render(request, 'messages/messages_index.html', result)
 
     return render(request, 'messages/messages_create.html', result)
 
@@ -141,7 +132,6 @@ def campaigns_create(request):
             'fetch_campaigns': [fetch_campaigns]
         }
         return render(request, 'messages/messages_create.html', result)
-        #return render(request, 'campaigns/campaigns_index.html', result)
 
     return render(request, 'campaigns/campaigns_create.html', result_instances)
 
@@ -150,12 +140,12 @@ def campaigns_index(request):
     
     processCsv = activeUtController()
     fetch_campaigns = processCsv._fetch_campaigns(request)
-    print(fetch_campaigns)
+    #print(fetch_campaigns)
 
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
-    print(result)
+    #print(result)
 
     return render(request, 'campaigns/campaigns_index.html', result)
 
@@ -173,32 +163,16 @@ def handle_campaign(request):
 
 @login_required(login_url='login_user')
 def home(request):
-    
-    print(request.POST)
-    
+
     processCsv = activeUtController()
     fetch_campaigns = processCsv._fetch_campaigns(request)
-    print(fetch_campaigns)
-    # result = {
-    #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
-    # }
+
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
+    #print(result)
 
-    if request.method == 'POST':
-        timeMsg = request.POST['timeMsg']
-        msgOut = request.POST['messageInput']
-        csv_file = request.FILES['csvFileInput']
-        campaign_id = request.POST['campaignSelect']
-         
-        resultcsv = processCsv._processInput(msgOut, campaign_id, csv_file)
-        #result_msg = processCsv._sendMessages(timeMsg, resultcsv, campaign_id)
-        #print(result_msg)
-        
-        return render(request, 'home.html', result)
-    else:
-        return render(request, 'home.html', result)
+    return render(request, 'campaigns/campaigns_index.html', result)
 
 
 
@@ -214,7 +188,7 @@ def login_user(request):
             customers = customersController()
             customers._setCustomerUser(user_session_id, request)
 
-            return redirect('home')
+            return redirect('campaigns_index')
         else:
             messages.error(request, ("Usuario ou senha incorretos!"))
             return redirect("login_user")

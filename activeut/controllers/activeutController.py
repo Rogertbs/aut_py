@@ -100,7 +100,7 @@ class activeUtController(Thread):
                 "campaign_name": x.campaigns_name,
                 "campaign_describe": x.campaigns_describre
             }
-        print(type(json_all_campaigns))
+        #print(type(json_all_campaigns))
         return json_all_campaigns
     
     def _fetch_instances(self, request):
@@ -114,7 +114,7 @@ class activeUtController(Thread):
                 "id": x.id,
                 "instance_name": x.instance_name
             }
-        print(type(json_all_instances))
+        #print(type(json_all_instances))
         return json_all_instances
     
     def _fetch_messages(self, request):
@@ -157,15 +157,16 @@ class activeUtController(Thread):
             for x in messages:
                 print(x.id)
                 print(x.lead_name)
+                print(x.send_timestamp)
                 json_messages[x] = {
                     "id": x.id,
                     "lead_name": x.lead_name,
                     "lead_number": x.lead_number,
                     "send_status": x.send_status,
-                    "send_timestamp": x.send_timestamp
+                    "send_timestamp": x.send_timestamp.strftime('%d/%m/%Y %H:%M:%S') if x.send_timestamp is not None else ''
                 }
-            print(type(json_messages))
-            print(json_messages)
+            #print(type(json_messages))
+            #print(json_messages)
             return json_messages
         else:
             return ''
@@ -236,34 +237,37 @@ class activeUtController(Thread):
                     }
                 '''
             elif int(handler) == 0:
-                # To Do Falta desabilidar a campanha no banco de dados enabled=0
-                print(f"<<< Disabled Campaign {campaign_id} >>> \n")
-                print(f"Handler Campaigns action Disabled >>> {handler} >>> Campaign id >> {campaign_id} \n Cache >> {cache.get(str(campaign_id))}")
-                if cache.get(str(campaign_id)) is not None:
-                    thread_id = cache.get(str(campaign_id))
-                    print(f"thread_id get cache >> {type(thread_id)}")
-                    if thread_id:
-                        print(f"Thread id >>> {thread_id}")
-                        campaign_process = multiprocessing.current_process()
-                        print(campaign_process)
-                        for process in multiprocessing.active_children():
-                            print(f"Try search process with PID {thread_id}")
-                            if process.pid == thread_id:
-                                print(f"Found process with PID {thread_id}")
-                                process.terminate()
-                                process.join()
-                                print(f"Terminad process pid-id {thread_id} campaigns >> {campaign_id}")
-                                cache.delete(str(campaign_id))
-                                
-                                # Set campaign disabled in database
-                                self._handleCampaign(campaign_id, handler)
+                try:
+                    print(f"<<< Disabled Campaign {campaign_id} >>> \n")
+                    print(f"Handler Campaigns action Disabled >>> {handler} >>> Campaign id >> {campaign_id} \n Cache >> {cache.get(str(campaign_id))}")
+                    if cache.get(str(campaign_id)) is not None:
+                        thread_id = cache.get(str(campaign_id))
+                        print(f"thread_id get cache >> {type(thread_id)}")
+                        if thread_id:
+                            print(f"Thread id >>> {thread_id}")
+                            campaign_process = multiprocessing.current_process()
+                            print(campaign_process)
+                            for process in multiprocessing.active_children():
+                                print(f"Try search process with PID {thread_id}")
+                                if process.pid == thread_id:
+                                    print(f"Found process with PID {thread_id}")
+                                    process.terminate()
+                                    process.join()
+                                    print(f"Terminad process pid-id {thread_id} campaigns >> {campaign_id}")
+                                    cache.delete(str(campaign_id))
+                                    
+                                    # Set campaign disabled in database
+                                    self._handleCampaign(campaign_id, handler)
 
-   
-                    print(f"<<<<< Campaign {campaign_id} Is deleted cache >>>")
-                    print(f"<<< Current thread >>> {thread_id} >>>")
-                # Set campaign disabled in database
-                self._handleCampaign(campaign_id, handler)
-                return 0
+    
+                        print(f"<<<<< Campaign {campaign_id} Is deleted cache >>>")
+                        print(f"<<< Current thread >>> {thread_id} >>>")
+                    # Set campaign disabled in database
+                    self._handleCampaign(campaign_id, handler)
+                    return 0
+                except Exception as e:
+                    print(f"Error Disable Campaign {campaign_id} >> {e}")
+                    return 0
 
             # __ Get all leads whit id campaign information param
             try:
@@ -431,7 +435,7 @@ class activeUtController(Thread):
             print(f">>>>>>>>> Set campaign Handler >>> {handler}")
             campaign.enabled = handler
             campaign.save()
-            print(f">>>>>>>>> Set campaign {campaign_id} Handler Success >>> {handler}")
+            #print(f">>>>>>>>> Set campaign {campaign_id} Handler Success >>> {handler}")
             return True
         except Exception as e:
             print(f">>>>>>>>> Set campaign {campaign_id} Handler Error >>> {handler} >>> {e}")
@@ -441,14 +445,16 @@ class activeUtController(Thread):
     def _convertStamp(self, timeSampt=None):
         try:
             if timeSampt is None:
-                return timezone.now()
+                return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
             else:
+                return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
                 messageTimestamp = timezone.datetime.fromtimestamp(int(timeSampt))
                 messageTimestamp = timezone.make_aware(messageTimestamp, timezone=timezone.utc)
                 messageTimestamp = timezone.localtime(messageTimestamp, timezone=timezone.get_current_timezone())
                 return messageTimestamp
         except Exception as e:
             print(f"Error convert timeStamp >>> {e}")
+            return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
             messageTimestamp = datetime.fromtimestamp(int(timeSampt)).strftime('%Y-%m-%d %H:%M:%S.%f')
             messageTimestamp =  timezone.make_aware(messageTimestamp)
             return messageTimestamp

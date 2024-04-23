@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 """
 Create Class Model
@@ -33,7 +34,7 @@ class leads_in(models.Model):
     lead_number = models.CharField(max_length=100, null=False)
     id_campaign = models.IntegerField(null=True)
     send_status = models.CharField(max_length=100)
-    send_timestamp = models.DateTimeField(null=True)
+    send_timestamp = models.DateTimeField(null=True, auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 # Create model table campaigns
