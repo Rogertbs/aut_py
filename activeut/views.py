@@ -65,7 +65,8 @@ def leads_in(request):
          
         resultcsv = processCsv._processInput(campaign_id, csv_file)
         
-        return render(request, 'campaigns/campaigns_index.html', result)
+        #return render(request, 'campaigns/campaigns_index.html', result)
+        return redirect('campaigns_index')
     else:
         return render(request, 'leads/leads_in.html', result)
 
@@ -155,11 +156,12 @@ def handle_campaign(request):
     print(f"HANDLECAMPAING  >>> {request}")
 
     if request.method == 'POST':
-     handleCampaign = activeUtController()
-     result_msg = handleCampaign._sendMessages(request)
-    #print(result_msg)
-    
-    return render(request, 'campaigns/campaigns_index.html')
+        handleCampaign = activeUtController()
+        result_msg = handleCampaign._sendMessages(request)
+        #print(result_msg)
+        return render(request, 'campaigns/campaigns_index.html')
+
+
 
 @login_required(login_url='login_user')
 def home(request):

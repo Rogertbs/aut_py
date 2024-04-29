@@ -76,14 +76,39 @@
                     'status': status,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
-                dataType: 'json',
+                dataType: 'text',
                 success: function(response) {
                     // Handle success response if needed
-                    console.log(response);
+                    //console.log(response);
+                    console.log("Sucess AJAX")
+                    if (status == 1){
+                        $('span.badge').text("Ativo").removeClass().addClass("badge text-bg-success");
+                    } else if (status == 0){
+                        $('span.badge').text("Desativado").removeClass().addClass("badge text-bg-danger");
+                    }
+                    
+                    //location.reload();
+                    // $.ajax({
+                    //         type: 'GET',
+                    //         url: '{% url "campaigns_index" %}',
+                    //         // data: {
+                    //         //     'campaign_id': campaignId,
+                    //         //     'status': status,
+                    //         //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    //         // },
+                    //         dataType: 'text',
+                    //         success: function(response) {
+                    //             console.log("Sucess Campaign Index")  
+                    //         },
+                    //         error: function(xhr, status, error) {;
+                    //             console.log("ERROR Campaign Index")
+                    //         }
+                    //     });
                 },
                 error: function(xhr, status, error) {
                     // Handle error if needed
-                    console.error(xhr.responseText);
+                    //console.error(xhr.responseText);
+                    console.log("ERROR AJAX")
                 }
             });
         });
