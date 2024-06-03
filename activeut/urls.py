@@ -16,7 +16,10 @@ urlpatterns = [
     
     path('leads_in/', views.leads_in, name='leads_in'),
     path('leads_index/', views.leads_index, name='leads_index'),
-    #path('/leads_index/leads_index_table/', views.leads_index_table, name='leads_index_table'),
+    
+    
+    path('dashboard_campaigns', views.dashboard_campaigns, name='dashboard_campaigns'),
+    path('dashboards_statistics', views.dashboards_statistics, name='dashboards_statistics'),
             
     path("", views.index, name="index"),
 ]

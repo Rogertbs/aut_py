@@ -76,14 +76,17 @@
                     'status': status,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
-                dataType: 'json',
+                dataType: 'text',
                 success: function(response) {
-                    // Handle success response if needed
-                    console.log(response);
+                    console.log("Sucess AJAX")
+                    if (status == 1){
+                        $('span.badge').text("Ativo").removeClass().addClass("badge text-bg-success");
+                    } else if (status == 0){
+                        $('span.badge').text("Desativado").removeClass().addClass("badge text-bg-danger");
+                    }
                 },
                 error: function(xhr, status, error) {
-                    // Handle error if needed
-                    console.error(xhr.responseText);
+                    console.log("ERROR AJAX")
                 }
             });
         });

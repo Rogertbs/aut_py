@@ -7,6 +7,7 @@ from activeut.controllers.activeutController import activeUtController
 from activeut.controllers.customersController import customersController
 from activeut.controllers.campaignsController import campaignsController
 from activeut.controllers.messagesController import messagesController
+from activeut.controllers.dashboardsController import dashboardsController
 
 from datetime import datetime
 from django.http import HttpResponse
@@ -65,7 +66,8 @@ def leads_in(request):
          
         resultcsv = processCsv._processInput(campaign_id, csv_file)
         
-        return render(request, 'campaigns/campaigns_index.html', result)
+        #return render(request, 'campaigns/campaigns_index.html', result)
+        return redirect('campaigns_index')
     else:
         return render(request, 'leads/leads_in.html', result)
 
@@ -155,11 +157,80 @@ def handle_campaign(request):
     print(f"HANDLECAMPAING  >>> {request}")
 
     if request.method == 'POST':
-     handleCampaign = activeUtController()
-     result_msg = handleCampaign._sendMessages(request)
-    #print(result_msg)
+        handleCampaign = activeUtController()
+        result_msg = handleCampaign._sendMessages(request)
+        #print(result_msg)
+        return render(request, 'campaigns/campaigns_index.html')
+
+
+@login_required(login_url='login_user')
+def dashboard_campaigns(request):
+
+    processCsv = activeUtController()
+    fetch_campaigns = processCsv._fetch_campaigns(request)
     
-    return render(request, 'campaigns/campaigns_index.html')
+    dash_statistics = dashboardsController()
+    # fetch_total_delivered = dash_statistics._getTotalDeliverd(request)
+    # print(f"Total Delivered >>>> {fetch_total_delivered}")
+    
+    # fetch_total_sent = dash_statistics._getTotalSent(request)
+    # print(f"Total Sent >>>> {fetch_total_sent}")
+    
+    # fetch_total_false = dash_statistics._getTotalFalse(request)
+    # print(f"Total False >>>> {fetch_total_false}")
+    
+    # fetch_total_active = dash_statistics._getTotalActive(request)
+    # print(f"Total Active >>>> {fetch_total_active}")
+    
+    # fetch_total_outstanding = dash_statistics._getTotalOutstanding(request)
+    # print(f"Total OutStanding >>>> {fetch_total_outstanding} \n")
+
+    # fetch_details = dash_statistics._getDetails(request)
+    # print(f"Total Details >>>> {fetch_details}")
+
+    # result = {
+    #     'fetch_campaigns': [fetch_campaigns],
+    #     'fetch_total_delivered': [fetch_total_delivered],
+    #     'fetch_total_sent': [fetch_total_sent],
+    #     'fetch_total_false': [fetch_total_false],
+    #     'fetch_total_active': [fetch_total_active],
+    #     'fetch_total_outstanding': [fetch_total_outstanding],
+    #     'fetch_details': [fetch_details]
+    # }
+
+    dash = dash_statistics._getDashboard(request)
+    print(dash)
+
+    result = {
+        'fetch_campaigns': [fetch_campaigns],
+        'fetch_total_delivered': [dash["total_delivered"]],
+        'fetch_total_sent': [dash["total_sent"]],
+        'fetch_total_false': [dash["total_false"]],
+        'fetch_total_active': [dash["total_actives"]],
+        'fetch_total_outstanding': [dash["outstanding"]],
+        'fetch_details': [dash["details"]]
+    }
+    
+
+    return render(request, 'dashboards/dashboard_campaigns.html', result)
+
+#@login_required(login_url='login_user')
+def dashboards_statistics(request):
+      
+    dash_statistics = dashboardsController()
+    dash = dash_statistics._getDashboard(request)
+
+    result = {
+        'fetch_total_delivered': [dash["total_delivered"]],
+        'fetch_total_sent': [dash["total_sent"]],
+        'fetch_total_false': [dash["total_false"]],
+        'fetch_total_active': [dash["total_actives"]],
+        'fetch_total_outstanding': [dash["outstanding"]],
+        'fetch_details': [dash["details"]]
+    }
+
+    from django.http import JsonResponse
+    return JsonResponse(result)
 
 @login_required(login_url='login_user')
 def home(request):

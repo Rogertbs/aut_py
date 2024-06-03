@@ -2,3 +2,5 @@
 .aut/__pycache__/
 __pycache__/
 *.pyc
+activeut/__init__.py
+__init__.py
