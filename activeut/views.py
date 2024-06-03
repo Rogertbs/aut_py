@@ -232,6 +232,7 @@ def dashboards_statistics(request):
     from django.http import JsonResponse
     return JsonResponse(result)
 
+
 @login_required(login_url='login_user')
 def home(request):
 
