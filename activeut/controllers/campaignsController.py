@@ -1,10 +1,7 @@
-import csv, json
-import requests, time, threading
 from threading import Thread
 from datetime import datetime
 from django.core.cache import cache
 from activeut.models import campaigns
-from activeut.models import leads_in
 from datetime import datetime
 from django.utils import timezone
 
@@ -20,12 +17,12 @@ class campaignsController(Thread):
             campaigns_describre = request.POST['campaigns_describe']
             instance_id=request.POST['instanceSelect']
             created_at = self._convertStamp()
-            customer_id = request.session.get('customer_user')
+            customer_id = request.session.get('customer_main')
             new_campaign = campaigns(campaigns_name=campaigns_name,
                                     campaigns_describre=campaigns_describre,
                                         enabled=0,
                                         created_at=created_at,
-                                        customer_id=customer_id,
+                                        customer_id=customer_id[0], ### Todo erro ao salvar pq agora tem uma lista [1,2] ver o que vai fazer???
                                         instance_id=instance_id)
 
             # Save the instance to the database
@@ -35,6 +32,19 @@ class campaignsController(Thread):
             print(e)
             return False
         return True
+    
+
+    def _fetch_campaigns(self, request):
+        all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user')).order_by('-created_at')   
+        
+        json_all_campaigns = {}
+        for x in all_campaigns:
+            json_all_campaigns[x] = {
+                "id": x.id,
+                "campaign_name": x.campaigns_name,
+                "campaign_describe": x.campaigns_describre
+            }
+        return json_all_campaigns
 
     
     

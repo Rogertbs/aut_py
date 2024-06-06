@@ -25,6 +25,7 @@
                   <th scope="col">Tipo</th>
                   <th scope="col">Nome da Mídia</th>
                   <th scope="col">Tempo p/ a próx. Msg</th>
+                  <th scope="col">Editar Msg</th>
                 </tr>
               </thead>
             {% for message_dict in fetch_messages %}
@@ -37,6 +38,11 @@
                       <td >{{ message.media_type }}</td>
                       <td >{{ message.media_name }}</td>
                       <td >{{ message.time_msg }}</td>
+                      <td >
+                        <a href="{% url "messages_update" message.id %}">
+                            <button type="button" class="btn btn-warning">Editar</button>
+                        </a>
+                      </td>
                   </tr>
             {% endfor %}
             {% endfor %}

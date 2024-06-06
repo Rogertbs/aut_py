@@ -12,6 +12,8 @@ urlpatterns = [
     
     path('messages_index/', views.messages_index, name='messages_index'),
     path('messages_create/', views.messages_create, name='messages_create'),
+    path('messages_update/<int:id>/', views.messages_update, name='messages_update'),
+    path('messages_update/', views.messages_update, name='messages_update'),
     
     
     path('leads_in/', views.leads_in, name='leads_in'),

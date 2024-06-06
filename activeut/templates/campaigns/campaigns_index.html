@@ -64,6 +64,7 @@
     $(document).ready(function() {
         // Event delegation for handling clicks on campaign switches
         $('#campaignTable').on('click', '#handleCampaign', function() {
+            var $this = $(this); 
             var campaignId = $(this).data('id');  // Get the campaign ID
             var status = $(this).prop('checked') ? 1 : 0;  // Determine the new status (checked: 1, unchecked: 0)
 
@@ -79,10 +80,11 @@
                 dataType: 'text',
                 success: function(response) {
                     console.log("Sucess AJAX")
+                    var $badge = $this.closest('tr').find('span.badge');
                     if (status == 1){
-                        $('span.badge').text("Ativo").removeClass().addClass("badge text-bg-success");
+                       $badge.text("Ativo").removeClass().addClass("badge text-bg-success");
                     } else if (status == 0){
-                        $('span.badge').text("Desativado").removeClass().addClass("badge text-bg-danger");
+                       $badge.text("Desativado").removeClass().addClass("badge text-bg-danger");
                     }
                 },
                 error: function(xhr, status, error) {
@@ -94,45 +96,6 @@
 
 </script>
 
-<script>
-    function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
-    }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-</script>
 
 
 <div id="loader" style="display: none">

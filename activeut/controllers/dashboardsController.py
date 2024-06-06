@@ -15,12 +15,15 @@ class dashboardsController():
     def _getTotalDeliverd(self, request):
         
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
         # Get infos all messages
         cursor = connection.cursor()
         qtd_delivered = (f"SELECT COUNT(l.id) AS 'qtd_delivered' FROM activeut_campaigns AS c "
                           f"INNER JOIN activeut_leads_in AS l "
                           f"ON c.id = l.id_campaign "
-                          f"WHERE c.enabled = 1 AND c.customer_id = {id_customer} "
+                          f"WHERE c.enabled = 1 AND c.customer_id IN {id_customers_clause} "
                           f"AND l.send_status = 'PENDING'")
         
         cursor.execute(qtd_delivered)
@@ -34,12 +37,15 @@ class dashboardsController():
     def _getTotalSent(self, request):
     
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
         # Get infos all messages
         cursor = connection.cursor()
         q_qtd_sent = (f"SELECT COUNT(l.id) as 'qtd_sent' FROM activeut_campaigns AS c "
                          f"INNER JOIN activeut_leads_in AS l "
                          f"ON c.id = l.id_campaign "
-                         f"WHERE c.enabled = 1 AND c.customer_id = {id_customer}")
+                         f"WHERE c.enabled = 1 AND c.customer_id IN {id_customers_clause}")
         
         cursor.execute(q_qtd_sent)
         qtd_sent = cursor.fetchall()
@@ -51,12 +57,15 @@ class dashboardsController():
     def _getTotalFalse(self, request):
     
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
         # Get infos all messages
         cursor = connection.cursor()
         q_qtd_false = (f"SELECT COUNT(l.id) as 'qtd_false' FROM activeut_campaigns AS c "
                          f"INNER JOIN activeut_leads_in AS l "
                          f"ON c.id = l.id_campaign "
-                         f"WHERE c.enabled = 1 AND c.customer_id = {id_customer} "
+                         f"WHERE c.enabled = 1 AND c.customer_id IN {id_customers_clause} "
                          f"AND l.send_status = 'False'")
         
         cursor.execute(q_qtd_false)
@@ -69,11 +78,15 @@ class dashboardsController():
     def _getTotalActive(self, request):
     
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
+
         # Get infos all messages
         cursor = connection.cursor()
         q_qtd_active = (f"SELECT COUNT(id) FROM activeut_campaigns "
                          f"WHERE enabled = 1 AND "
-                         f"customer_id = {id_customer} ")
+                         f"customer_id IN {id_customers_clause} ")
         
         cursor.execute(q_qtd_active)
         qtd_active = cursor.fetchall()
@@ -87,12 +100,16 @@ class dashboardsController():
     def _getTotalOutstanding(self, request):
     
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
+        
         # Get infos all messages
         cursor = connection.cursor()
         q_qtd_outstanding = (f"SELECT COUNT(l.id) AS 'qtd_outstanding' FROM activeut_campaigns AS c "
                              f"INNER JOIN activeut_leads_in AS l "
                              f" ON c.id = l.id_campaign "
-                             f"WHERE c.enabled = 1 AND c.customer_id = {id_customer} "
+                             f"WHERE c.enabled = 1 AND c.customer_id IN {id_customers_clause} "
                              f"AND l.send_status = ''")
         
         cursor.execute(q_qtd_outstanding)
@@ -106,13 +123,17 @@ class dashboardsController():
     def _getDetails(self, request):
     
         id_customer=request.session.get('customer_user')
+        # format id customers
+        id_customer_str = [str(id) for id in id_customer]
+        id_customers_clause = f"({', '.join(id_customer_str)})"
+
         # Get infos all messages
         cursor = connection.cursor()
         q_qdetails = (f"SELECT l.id, c.campaigns_name, l.lead_name, l.lead_number, l.send_status, l.send_timestamp FROM activeut_campaigns AS c "
                       f"INNER JOIN activeut_leads_in AS l "
                       f"ON c.id = l.id_campaign "
                       f"WHERE c.enabled = 1 "
-                      f"AND c.enabled = 1 AND c.customer_id = {id_customer} "
+                      f"AND c.enabled = 1 AND c.customer_id IN {id_customers_clause} "
                       f"AND l.send_status <> '' ORDER BY send_timestamp DESC limit 8")
         
         cursor.execute(q_qdetails)
