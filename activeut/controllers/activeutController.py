@@ -88,88 +88,6 @@ class activeUtController(Thread):
             return None
         return json_data
     
-    def _fetch_campaigns(self, request):
-        all_campaigns = campaigns.objects.filter(customer_id=request.session.get('customer_user')).order_by('-created_at')   
-        
-        json_all_campaigns = {}
-        for x in all_campaigns:
-            #print(x.id)
-            #print(x.campaigns_name)
-            json_all_campaigns[x] = {
-                "id": x.id,
-                "campaign_name": x.campaigns_name,
-                "campaign_describe": x.campaigns_describre
-            }
-        #print(type(json_all_campaigns))
-        return json_all_campaigns
-    
-    def _fetch_instances(self, request):
-        all_instances = instances.objects.filter(id_customer=request.session.get('customer_user'))   
-        
-        json_all_instances = {}
-        for x in all_instances:
-            print(x.id)
-            print(x.instance_name)
-            json_all_instances[x] = {
-                "id": x.id,
-                "instance_name": x.instance_name
-            }
-        #print(type(json_all_instances))
-        return json_all_instances
-    
-    def _fetch_messages(self, request):
-        id_customer=request.session.get('customer_user')
-        # Get infos all messages
-        cursor = connection.cursor()
-        fetch_messages = (f"SELECT m.id, c.campaigns_name, m.message, m.message_description, m.media_type, m.media_name, m.time_msg "
-                          f"FROM activeut_messagens_campaigns AS m "
-                          f"JOIN activeut_campaigns AS c "
-                          f"ON m.campaign_id = c.id "
-                          f"WHERE m.customer_id = {id_customer}")
-        
-        cursor.execute(fetch_messages)
-        all_messages = cursor.fetchall()
-        connection.close()   
-        
-        json_all_messages = {}
-
-        for campaign in all_messages:
-            id, campaigns_name, message, message_description, media_type, media_name, time_msg = campaign
-            json_all_messages[id] = {
-                'id': id,
-                'campaigns_name': campaigns_name,
-                'message_description': message_description,
-                'message': message,
-                'media_type': media_type,
-                'media_name': media_name,
-                'time_msg': time_msg
-        }
-
-        return json_all_messages
-
-    def _fetch_leads(self, request):
-        print(request.POST)
-        if request.method == 'POST':
-            campaign_id = request.POST['campaignSelect']
-            messages = leads_in.objects.filter(id_campaign=campaign_id).order_by('send_timestamp')
-            
-            json_messages = {}
-            for x in messages:
-                print(x.id)
-                print(x.lead_name)
-                print(x.send_timestamp)
-                json_messages[x] = {
-                    "id": x.id,
-                    "lead_name": x.lead_name,
-                    "lead_number": x.lead_number,
-                    "send_status": x.send_status,
-                    "send_timestamp": x.send_timestamp.strftime('%d/%m/%Y %H:%M:%S') if x.send_timestamp is not None else ''
-                }
-            #print(type(json_messages))
-            #print(json_messages)
-            return json_messages
-        else:
-            return ''
        
     def _sendMessages(self, request):
 
@@ -358,7 +276,7 @@ class activeUtController(Thread):
                                         obj.save()
                                                                     
                                 #if count == 1:      
-                                time.sleep(int(time_msg) * 1)
+                                time.sleep(int(time_msg) * 60)
                             except Exception as e:
                                 messageTimestamp = self._convertStamp()
                                 lead_to_update = leads_in.objects.filter(lead_number=json_data[lead]['lead_number'],

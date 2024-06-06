@@ -8,6 +8,8 @@ from activeut.controllers.customersController import customersController
 from activeut.controllers.campaignsController import campaignsController
 from activeut.controllers.messagesController import messagesController
 from activeut.controllers.dashboardsController import dashboardsController
+from activeut.controllers.instanceController import instanceController
+from activeut.controllers.leadsController import leadsController
 
 from datetime import datetime
 from django.http import HttpResponse
@@ -29,14 +31,15 @@ def index(request):
 @login_required(login_url='login_user')
 def leads_index(request):
 
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
+    lead = leadsController()
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
     
     if request.method == 'POST':
-        fetch_leads = processCsv._fetch_leads(request)
+        fetch_leads = lead._fetch_leads(request)
         result = {
             'fetch_leads': [fetch_leads],
             'fetch_campaigns': [fetch_campaigns]
@@ -48,14 +51,10 @@ def leads_index(request):
 
 @login_required(login_url='login_user')
 def leads_in(request):
-    
-    #print(request.POST)
-    
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
-    # result = {
-    #     'fetch_campaigns': [[{'id': '1', 'campaigns_name': 'teste'}]]
-    # }
+       
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
+
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
@@ -63,10 +62,10 @@ def leads_in(request):
     if request.method == 'POST':
         csv_file = request.FILES['csvFileInput']
         campaign_id = request.POST['campaignSelect']
-         
+        
+        processCsv = activeUtController()
         resultcsv = processCsv._processInput(campaign_id, csv_file)
         
-        #return render(request, 'campaigns/campaigns_index.html', result)
         return redirect('campaigns_index')
     else:
         return render(request, 'leads/leads_in.html', result)
@@ -76,8 +75,8 @@ def messages_create(request):
 
     result = None
     
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
@@ -87,8 +86,8 @@ def messages_create(request):
         result = messages._createMessage(request)
     
     if result is True:
-        processCsv = activeUtController()
-        fetch_campaigns = processCsv._fetch_campaigns(request)
+        camp = campaignsController()
+        fetch_campaigns = camp._fetch_campaigns(request)
         result = {
             'fetch_campaigns': [fetch_campaigns]
         }
@@ -97,12 +96,48 @@ def messages_create(request):
 
     return render(request, 'messages/messages_create.html', result)
 
+@login_required(login_url='login_user')
+def messages_update(request, id=None):
+
+    if request.method == 'POST':
+        
+        id = request.POST['id_message']
+        print(f"ID >> {id}")
+        messages = messagesController()
+        update_msg = messages._message_update(request, id) 
+        if update_msg:
+            fetch_messages = messages._fetch_messages(request)
+            result = {
+                'fetch_messages': [fetch_messages]
+            }  
+            return render(request, 'messages/messages_index.html', result)
+        else:
+            fetch_message = messages._fetch_messages(request, id)
+            result = {
+            'fetch_message': [fetch_message]
+            }
+            return render(request, 'messages/messages_update.html', result)     
+    else:
+        # Fetch campaigns
+        camp = campaignsController()
+        fetch_campaigns = camp._fetch_campaigns(request)
+        messages = messagesController()
+        fetch_message = messages._fetch_messages(request, id)
+        result = {
+        'fetch_message': [fetch_message],
+        'fetch_campaigns': [fetch_campaigns]
+        }
+        print(result)
+        return render(request, 'messages/messages_update.html', result)
+
+
+
 
 @login_required(login_url='login_user')
 def messages_index(request):
     
-    processCsv = activeUtController()
-    fetch_messages = processCsv._fetch_messages(request)
+    messages = messagesController()
+    fetch_messages = messages._fetch_messages(request)
 
     result = {
         'fetch_messages': [fetch_messages]
@@ -115,9 +150,8 @@ def messages_index(request):
 def campaigns_create(request):
     
     result = None
-
-    processCsv = activeUtController()
-    fetch_instances = processCsv._fetch_instances(request)
+    instance = instanceController()
+    fetch_instances = instance._fetch_instances(request)
     result_instances = {
         'fetch_instances': [fetch_instances]
     }
@@ -127,8 +161,8 @@ def campaigns_create(request):
        result = campaigns._createCampaing(request)
     
     if result is True:
-        processCsv = activeUtController()
-        fetch_campaigns = processCsv._fetch_campaigns(request)
+        camp = campaignsController()
+        fetch_campaigns = camp._fetch_campaigns(request)
 
         result = {
             'fetch_campaigns': [fetch_campaigns]
@@ -140,14 +174,12 @@ def campaigns_create(request):
 @login_required(login_url='login_user')
 def campaigns_index(request):
     
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
-    #print(fetch_campaigns)
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
 
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }
-    #print(result)
 
     return render(request, 'campaigns/campaigns_index.html', result)
 
@@ -166,8 +198,8 @@ def handle_campaign(request):
 @login_required(login_url='login_user')
 def dashboard_campaigns(request):
 
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
     
     dash_statistics = dashboardsController()
     # fetch_total_delivered = dash_statistics._getTotalDeliverd(request)
@@ -232,12 +264,11 @@ def dashboards_statistics(request):
     from django.http import JsonResponse
     return JsonResponse(result)
 
-
 @login_required(login_url='login_user')
 def home(request):
 
-    processCsv = activeUtController()
-    fetch_campaigns = processCsv._fetch_campaigns(request)
+    camp = campaignsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
 
     result = {
         'fetch_campaigns': [fetch_campaigns]
