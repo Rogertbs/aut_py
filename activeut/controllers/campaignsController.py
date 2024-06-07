@@ -1,9 +1,9 @@
 from threading import Thread
 from datetime import datetime
-from django.core.cache import cache
 from activeut.models import campaigns
 from datetime import datetime
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 class campaignsController(Thread):
     "Class handle input campaigns"
@@ -34,18 +34,43 @@ class campaignsController(Thread):
         return True
     
 
-    def _fetch_campaigns(self, request):
-        all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user')).order_by('-created_at')   
+    def _fetch_campaigns(self, request, id=None):
+        
+        if id is not None:
+            all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user'), id=id).order_by('-created_at')  
+        else:    
+            all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user')).order_by('-created_at')   
         
         json_all_campaigns = {}
         for x in all_campaigns:
             json_all_campaigns[x] = {
                 "id": x.id,
                 "campaign_name": x.campaigns_name,
-                "campaign_describe": x.campaigns_describre
+                "campaign_describe": x.campaigns_describre,
+                "instance_id": x.instance_id
             }
         return json_all_campaigns
+    
 
+    def _campaign_update(self, request, id=None):
+        try:
+            campaigns_name = request.POST['campaigns_name']
+            campaigns_describre = request.POST['campaigns_describe']
+            instance_id=request.POST['instanceSelect']
+            customer_id = request.session.get('customer_main')
+ 
+            # Update 
+            camp_up = get_object_or_404(campaigns, id=id)
+            camp_up.campaigns_name       = campaigns_name
+            camp_up.campaigns_describre  = campaigns_describre
+            camp_up.customer_id          = customer_id[0]
+            camp_up.instance_id          = instance_id
+
+            camp_up.save()
+            return True
+        except Exception as e:
+            print(e)
+            return False
     
     
     def _convertStamp(self, timeSampt=None):

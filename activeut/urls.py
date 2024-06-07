@@ -8,6 +8,7 @@ urlpatterns = [
     
     path('campaigns_index/', views.campaigns_index, name='campaigns_index'),
     path('campaigns_create/', views.campaigns_create, name='campaigns_create'),
+    path('campaigns_update/<int:id>/', views.campaigns_update, name='campaigns_update'),
     path('handle_campaign/', views.handle_campaign, name='handle_campaign'),
     
     path('messages_index/', views.messages_index, name='messages_index'),

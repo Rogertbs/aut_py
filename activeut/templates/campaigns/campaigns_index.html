@@ -22,6 +22,7 @@
                   <th scope="col">Nome</th>
                   <th scope="col">Descrição</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Editar</th>
                 </tr>
               </thead>
               <tbody>
@@ -42,6 +43,11 @@
                           <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-danger">Desativado</span></label>
                           {% endif %}
                       </div>
+                </td>
+                <td >
+                    <a href="{% url "campaigns_update" item.id %}">
+                        <button type="button" class="btn btn-warning">Editar</button>
+                    </a>
                 </td>
                 
                 {% endfor %}
