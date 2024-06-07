@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand text-center p-4">Campanhas</h3>
+        </div>
+    </header>
+ 
+      <main role="main" class="inner cover">
+        <p class="lead">Editar campanha</p>
+    
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for camp in fetch_campaigns %}
+        {% for key, value in camp.items %}
+    <div>
+        <div class="mb-3 mt-4">
+            <label for="messageInput" class="form-label" >ID: {{ value.id }}</label>
+            <input class="form-control" type="hidden" name="id_campaign" value="{{ value.id }}" aria-label="default input example">
+
+        </div>
+        <div class="mb-3 mt-4">
+            <label for="messageInput" class="form-label">Nome da campanha:</label>
+            <input class="form-control" type="text" name="campaigns_name" value="{{ value.campaign_name }}" aria-label="default input example">
+        </div>
+        <div class="mb-3 mt-4">
+            <label for="messageInput" class="form-label">Descrição:</label>
+            <input class="form-control" type="text" name="campaigns_describe" value="{{ value.campaign_describe }}" aria-label="default input example">
+        </div>
+        <div class="mb-3 dropdown mt-4">
+            <label for="formFile" class="form-label">Selecione uma Instância</label>
+            <select class="form-select" aria-label="Default select example" id="instanceSelect" name="instanceSelect">
+                {% for instance in fetch_instances %}
+                {% for item in instance %}
+                <option id="" value="{{ item.id }}" {% if item.id == value.instance_id %} selected {% endif %}>
+                    {{ item.instance_name }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <p class="lead">
+        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
+    </p>
+    </form>
+    {% endfor %}
+    {% endfor %}
+    </main>
+    <footer class="mastfoot mt-5">
+        <div class="inner">
+          <p>Active messages by UnifyTalk.</p>
+        </div>
+      </footer>
+</div>
+
+<script>
+    function uploadCSV() {
+       
+       const fileInput = document.getElementById('csvFileInput');
+       const formData = new FormData();
+
+       const textInput = document.getElementById('messageInput').value;
+       formData.append('messageInput', textInput);
+
+       const campaignSelect = document.getElementById('campaignSelect').value;
+       formData.append('campaignSelect', textInput);
+
+       formData.append('csvFile', fileInput.files[0]);
+       console.log(formData)
+       try {
+           const response = fetch('/activeut/home', {
+               method: 'POST',
+               body: formData
+           });
+           console.log('File uploaded successfully.');
+           //alert("O dados foram enviados com sucesso!")
+       } catch (error) {
+           console.error('Error uploading file:', error);
+       }
+   }
+
+</script>
+
+<style>
+
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .centered-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .custom-spinner {
+        color: #b00707;
+        width: 12rem;
+        height: 12rem;
+    }
+
+    .loading-text {
+        margin-top: 10px;
+        color: #b00707;
+    }
+</style>
+
+<style>
+    table {
+        border-spacing: unset !important;
+        border-collapse: unset !important;
+    }
+
+    table tr:last-child td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tr:last-child:hover td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tbody tr td {
+        border: 1px solid #c3c3c3 !important;
+    }
+</style>
+{% endblock %}

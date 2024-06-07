@@ -183,6 +183,40 @@ def campaigns_index(request):
 
     return render(request, 'campaigns/campaigns_index.html', result)
 
+
+@login_required(login_url='login_user')
+def campaigns_update(request, id=None):
+
+    if request.method == 'POST':
+
+        camp = campaignsController()
+        update_camp = camp._campaign_update(request, id) 
+        if update_camp:
+            fetch_campaigns = camp._fetch_campaigns(request)
+            result = {
+                'fetch_campaigns': [fetch_campaigns]
+            }  
+            return render(request, 'campaigns/campaigns_index.html', result)
+        else:
+            fetch_campaigns = camp._fetch_campaigns(request, id)
+            result = {
+            'fetch_campaigns': [fetch_campaigns]
+            }
+            return render(request, 'campaigns/campaigns_update.html', result)     
+    else:
+        instance = instanceController()
+        fetch_instances = instance._fetch_instances(request)
+        # Fetch campaigns
+        camp = campaignsController()
+        fetch_campaigns = camp._fetch_campaigns(request, id)
+        result = {
+        'fetch_instances': [fetch_instances],
+        'fetch_campaigns': [fetch_campaigns]
+        }
+        
+        return render(request, 'campaigns/campaigns_update.html', result)
+
+
 @login_required(login_url='login_user')
 def handle_campaign(request):
     
