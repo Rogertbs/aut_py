@@ -1,6 +1,7 @@
 from threading import Thread
 from datetime import datetime
 from activeut.models import campaigns
+from activeut.models import instances
 from datetime import datetime
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -41,14 +42,25 @@ class campaignsController(Thread):
         else:    
             all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user')).order_by('-created_at')   
         
+        all_instances = instances.objects.filter(id_customer__in=request.session.get('customer_user'))
+        
+        # fetch name instance
+        instances_names = {}
+        for inst_id in all_instances:
+            instances_names[inst_id.id] = {
+                "instance_name": inst_id.instance_name
+            }
+        
         json_all_campaigns = {}
         for x in all_campaigns:
             json_all_campaigns[x] = {
                 "id": x.id,
                 "campaign_name": x.campaigns_name,
                 "campaign_describe": x.campaigns_describre,
-                "instance_id": x.instance_id
+                "instance_id": x.instance_id,
+                "instance_name": str(instances_names[int(x.instance_id)]["instance_name"])
             }
+        
         return json_all_campaigns
     
 
