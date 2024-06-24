@@ -176,7 +176,6 @@ def campaigns_index(request):
     
     camp = campaignsController()
     fetch_campaigns = camp._fetch_campaigns(request)
-
     result = {
         'fetch_campaigns': [fetch_campaigns]
     }

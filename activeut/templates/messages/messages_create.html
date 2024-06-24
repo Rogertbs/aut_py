@@ -21,8 +21,8 @@
             <label for="formFile" class="form-label">Selecione uma campanha</label>
             <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
                 {% for campaign in fetch_campaigns %}
-                {% for item in campaign %}
-                <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
+                {% for key, item in campaign.items %}
+                <option id="" value="{{ item.id }}">{{ item.campaign_name }}</option>
                 {% endfor %}
                 {% endfor %}
             </select>
