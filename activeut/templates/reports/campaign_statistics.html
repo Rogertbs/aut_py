@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand text-center p-4">Mensagens</h3>
+        </div>
+    </header>
+ 
+      <main role="main" class="inner cover">
+        <p class="lead">Lista de Mensagens</p>
+
+
+    
+    <form class="col-12 my-2 my-lg-0" action="{% url "reports" %}" method=POST
+        onsubmit="return loading()">
+        {% csrf_token %}
+
+        <div class="mb-4 dropdown mt-4">
+            <p class="lead">
+                <button class="btn" type="submit" style="width: 55px;">
+                    <i class="svg-icon" aria-hidden="true" style="fill: #50CD89 !important;">
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>         
+                </button>
+            </p>
+        </div>
+
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" name="csv" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+              Gerar csv
+            </label>
+          </div>
+
+
+        <div class="mb-4 dropdown mt-4">
+            <label for="formFile" class="form-label">Selecione uma campanha</label>
+            <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
+                {% for campaign in fetch_campaigns %}
+                {% for key, item in campaign.items %}
+                <option id="" value="{{ item.id }}">{{ item.campaign_name }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <table class="table table-dark table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col"> Total Leads</th>
+                        <th scope="col"> Total Enviadas</th>
+                        <th scope="col"> Total Entregues</th>
+                        <th scope="col"> Total Números não Existentes</th>
+                        <th scope="col"> Toral Números Pendentes</th>
+                        <th scope="col"> Total Erros</th> 
+                    </tr>
+                </thead>
+
+                <tr>
+                    <td scope="row"> 
+                        {% for tl in total_leads %}
+                        <h3><span class="badge text-bg-light">{{tl}}</span></h3>
+                        {% endfor %}
+                    </td>
+                    <td scope="row"> 
+                        {% for ts in total_sent %}
+                        <h3><span class="badge text-bg-light">{{ts}}</span></h3>
+                        {% endfor %}
+                    </td>
+                    <td scope="row"> 
+                        {% for td in total_delivered %}
+                        <h3><span class="badge text-bg-success">{{td}}</span></h3>
+                        {% endfor %}
+                    </td>
+                    <td scope="row"> 
+                        {% for tf in total_false %}
+                        <h3><span class="badge text-bg-warning">{{tf}}</span></h3>
+                        {% endfor %}
+                    </td>
+                    <td scope="row"> 
+                        {% for to in total_outstanding %}
+                        <h3><span class="badge text-bg-light">{{to}}</span></h3>
+                        {% endfor %}
+                    </td>
+                    <td scope="row"> 
+                        {% for te in total_errors %}
+                        <h3><span class="badge text-bg-danger">{{te}}</span></h3>
+                        {% endfor %}
+                    </td>
+                </tr>
+              </table>
+        </div>
+    
+
+        <div>
+            <table class="table table-hover" id="campaignTable">
+                <thead class="table-dark">
+                    <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Número</th>
+                    <th scope="col">Status do envio</th>
+                    <th scope="col">Data-Hora / Envio</th>
+                    </tr>
+                </thead>
+                {% for lead_dict in fetch_leads %}
+                {% for key, lead in lead_dict.items %}
+                    <tr>
+                        <td scope="row">{{ lead.id }}</td>
+                        <td >{{ lead.lead_name }}</td>
+                        <td >{{ lead.lead_number }}</td>
+                        {% if lead.send_status == 'PENDING' %}
+                        <td><span class="badge text-bg-success">Envidado</span></td>
+                        {% elif lead.send_status == 'False' %}
+                        <td><span class="badge text-bg-warning">WhatsApp Não Existe</span></td>
+                        {% elif lead.send_status == '' %}
+                        <td><span class="badge text-bg-light">Pendente</span></td>
+                        {% else %}
+                        <td><span class="badge text-bg-danger">Falha de Envio</span></td>
+                        {% endif %}
+                        <td >{{ lead.send_timestamp }}</td>
+                    </tr>
+                {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+    </main>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Event delegation for handling clicks on campaign switches
+        $('#campaignTable').on('click', '#handleCampaign', function() {
+            var campaignId = $(this).data('id');  // Get the campaign ID
+            var status = $(this).prop('checked') ? 1 : 0;  // Determine the new status (checked: 1, unchecked: 0)
+
+            // Perform AJAX request to handle campaign
+            $.ajax({
+                type: 'POST',
+                url: '{% url "handle_campaign" %}',
+                data: {
+                    'campaign_id': campaignId,
+                    'status': status,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    // Handle success response if needed
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error if needed
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+
+
+<style>
+
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .centered-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .custom-spinner {
+        color: #b00707;
+        width: 12rem;
+        height: 12rem;
+    }
+
+    .loading-text {
+        margin-top: 10px;
+        color: #b00707;
+    }
+</style>
+
+<style>
+    table {
+        border-spacing: unset !important;
+        border-collapse: unset !important;
+    }
+
+    table tr:last-child td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tr:last-child:hover td:first-child {
+        -moz-border-radius: 0 0 0 6px;
+        -webkit-border-radius: 0 0 0 6px;
+        border-radius: 0 0 0 6px;
+    }
+
+    table tr:last-child td:last-child {
+        -moz-border-radius: 0 0 6px 0;
+        -webkit-border-radius: 0 0 6px 0;
+        border-radius: 0 0 6px 0;
+    }
+
+    table tbody tr td {
+        border: 1px solid #c3c3c3 !important;
+    }
+</style>
+{% endblock %}
