@@ -23,6 +23,9 @@ urlpatterns = [
     
     path('dashboard_campaigns', views.dashboard_campaigns, name='dashboard_campaigns'),
     path('dashboards_statistics', views.dashboards_statistics, name='dashboards_statistics'),
+
+    path('reports', views.reports_statistics, name='reports'),
+
             
     path("", views.index, name="index"),
 ]

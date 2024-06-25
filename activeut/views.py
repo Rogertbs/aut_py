@@ -1,8 +1,3 @@
-import os
-import subprocess
-import csv, json
-import requests, time, threading
-
 from activeut.controllers.activeutController import activeUtController
 from activeut.controllers.customersController import customersController
 from activeut.controllers.campaignsController import campaignsController
@@ -10,16 +5,17 @@ from activeut.controllers.messagesController import messagesController
 from activeut.controllers.dashboardsController import dashboardsController
 from activeut.controllers.instanceController import instanceController
 from activeut.controllers.leadsController import leadsController
+from activeut.controllers.reportsController import reportsController
 
-from datetime import datetime
 from django.http import HttpResponse
-from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
-from django.http import FileResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+import csv
+
 
 # Check if threads actives  
 active_threads = []
@@ -235,33 +231,6 @@ def dashboard_campaigns(request):
     fetch_campaigns = camp._fetch_campaigns(request)
     
     dash_statistics = dashboardsController()
-    # fetch_total_delivered = dash_statistics._getTotalDeliverd(request)
-    # print(f"Total Delivered >>>> {fetch_total_delivered}")
-    
-    # fetch_total_sent = dash_statistics._getTotalSent(request)
-    # print(f"Total Sent >>>> {fetch_total_sent}")
-    
-    # fetch_total_false = dash_statistics._getTotalFalse(request)
-    # print(f"Total False >>>> {fetch_total_false}")
-    
-    # fetch_total_active = dash_statistics._getTotalActive(request)
-    # print(f"Total Active >>>> {fetch_total_active}")
-    
-    # fetch_total_outstanding = dash_statistics._getTotalOutstanding(request)
-    # print(f"Total OutStanding >>>> {fetch_total_outstanding} \n")
-
-    # fetch_details = dash_statistics._getDetails(request)
-    # print(f"Total Details >>>> {fetch_details}")
-
-    # result = {
-    #     'fetch_campaigns': [fetch_campaigns],
-    #     'fetch_total_delivered': [fetch_total_delivered],
-    #     'fetch_total_sent': [fetch_total_sent],
-    #     'fetch_total_false': [fetch_total_false],
-    #     'fetch_total_active': [fetch_total_active],
-    #     'fetch_total_outstanding': [fetch_total_outstanding],
-    #     'fetch_details': [fetch_details]
-    # }
 
     dash = dash_statistics._getDashboard(request)
     print(dash)
@@ -296,6 +265,51 @@ def dashboards_statistics(request):
 
     from django.http import JsonResponse
     return JsonResponse(result)
+
+# Reports
+@login_required(login_url='login_user')
+def reports_statistics(request):
+    lead = leadsController()
+    camp = campaignsController()
+    report = reportsController()
+    fetch_campaigns = camp._fetch_campaigns(request)
+    result = {
+        'fetch_campaigns': [fetch_campaigns]
+    }
+    
+    if request.method == 'POST':
+        if 'csv' in request.POST.keys():
+            print(request.POST['csv']) # TODO CSV DOWNLOAD
+            return report._csvCampaignStatistics(request)
+            pass
+        else:
+            id = request.POST['campaignSelect']
+            
+            total_delivered = report._getTotalDeliverd(request, id)
+            total_sent = report._getTotalSent(request, id)
+            total_false = report._getTotalFalse(request, id)
+            total_outstanding = report._getTotalOutstanding(request, id)
+            total_errors = report._getTotalErrors(request, id)
+
+            total_leads = int(total_false) + int(total_delivered) + int(total_errors) + int(total_outstanding)
+
+            fetch_leads = lead._fetch_leads(request)
+            result = {
+                'fetch_leads': [fetch_leads],
+                'fetch_campaigns': [fetch_campaigns],
+                'total_delivered': [total_delivered],
+                'total_sent': [total_sent],
+                'total_false': [total_false],
+                'total_outstanding': [total_outstanding],
+                'total_errors': [total_errors],
+                'total_leads': [total_leads]
+            }
+            return render(request, 'reports/campaign_statistics.html', result)
+    
+    return render(request, 'reports/campaign_statistics.html', result)
+
+
+
 
 @login_required(login_url='login_user')
 def home(request):
