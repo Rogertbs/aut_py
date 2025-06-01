@@ -1,4 +1,4 @@
-# 📤 Sistema de Envio de Mensagens - Active Unify Talk
+# 📤 Sistema de Envio de Mensagens - Rocket Send
 
 Este projeto é uma plataforma web desenvolvida em **Python (Django)** para criação e gerenciamento de campanhas de envio de mensagens personalizadas via **WhatsApp**, com suporte a múltiplas instâncias, importação de leads e controle de tempo de envio (time frame).
 
