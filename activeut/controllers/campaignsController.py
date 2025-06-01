@@ -1,7 +1,6 @@
 from threading import Thread
 from datetime import datetime
 from activeut.models import campaigns
-from activeut.models import instances
 from datetime import datetime
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -28,41 +27,14 @@ class campaignsController(Thread):
                                         instance_id=instance_id)
 
             # Save the instance to the database
-            result = new_campaign.save()
-            print(result)
+            new_campaign.save()
+            print(f"Result save campaign >>> {new_campaign}")
+            return new_campaign
         except Exception as e:
             print(e)
             return False
         return True
     
-
-    # def _fetch_campaigns(self, request, id=None):
-        
-    #     if id is not None:
-    #         all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user'), id=id).order_by('-created_at')  
-    #     else:    
-    #         all_campaigns = campaigns.objects.filter(customer_id__in=request.session.get('customer_user')).order_by('-created_at')   
-        
-    #     all_instances = instances.objects.filter(id_customer__in=request.session.get('customer_user'))
-        
-    #     # fetch name instance
-    #     instances_names = {}
-    #     for inst_id in all_instances:
-    #         instances_names[inst_id.id] = {
-    #             "instance_name": inst_id.instance_name
-    #         }
-        
-    #     json_all_campaigns = {}
-    #     for x in all_campaigns:
-    #         json_all_campaigns[x] = {
-    #             "id": x.id,
-    #             "campaign_name": x.campaigns_name,
-    #             "campaign_describe": x.campaigns_describre,
-    #             "instance_id": x.instance_id,
-    #             "instance_name": str(instances_names[int(x.instance_id)]["instance_name"])
-    #         }
-        
-    #     return json_all_campaigns
     
     def _fetch_campaigns(self, request, id=None):
         try:
@@ -73,13 +45,12 @@ class campaignsController(Thread):
             else:
                 q_id = f"AND 1"
 
-            all_campaigns = (f"SELECT c.id, c.campaigns_name, c.campaigns_describre, c.instance_id, i.instance_name "
+            all_campaigns = (f"SELECT c.id, c.campaigns_name, c.campaigns_describre, c.instance_id, i.instance_name, c.enabled "
                                 f"FROM activeut_campaigns AS c JOIN activeut_instances AS i ON c.instance_id = i.id "
                                 f"WHERE c.customer_id IN ({id_customer}) "
                                 f"{q_id} "
                                 f"ORDER BY c.id DESC")
 
-            print(all_campaigns)
             cursor = connection.cursor()
             cursor.execute(all_campaigns)
             result = cursor.fetchall()
@@ -87,13 +58,14 @@ class campaignsController(Thread):
 
             res_all_campaigns = {}
             for camp in result:
-                id, campaigns_name, campaigns_describe, instance_id, instance_name  = camp
+                id, campaigns_name, campaigns_describe, instance_id, instance_name, enabled  = camp
                 res_all_campaigns[id] = {
                     "id": id,
                     "campaign_name": campaigns_name,
                     "campaign_describre": campaigns_describe,
                     "instance_id": instance_id,
-                    "instance_name": instance_name
+                    "instance_name": instance_name,
+                    "enabled": enabled
                 }
             
             return res_all_campaigns
@@ -101,8 +73,6 @@ class campaignsController(Thread):
             print(e)
             return 0
         
-
-    
 
     def _campaign_update(self, request, id=None):
         try:

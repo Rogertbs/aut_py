@@ -6,6 +6,7 @@ from activeut.controllers.dashboardsController import dashboardsController
 from activeut.controllers.instanceController import instanceController
 from activeut.controllers.leadsController import leadsController
 from activeut.controllers.reportsController import reportsController
+from activeut.controllers.timeFrameController import timeFrameController
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -153,8 +154,12 @@ def campaigns_create(request):
     }
     
     if request.method == 'POST':
-       campaigns = campaignsController()
-       result = campaigns._createCampaing(request)
+        campaigns = campaignsController()
+        result = campaigns._createCampaing(request)
+       
+        if result:
+            create_time_frame = timeFrameController()
+            result = create_time_frame._create_time_frame(request, result.id)
     
     if result is True:
         camp = campaignsController()
@@ -185,6 +190,7 @@ def campaigns_update(request, id=None):
     if request.method == 'POST':
 
         camp = campaignsController()
+        tf = timeFrameController()
         update_camp = camp._campaign_update(request, id) 
         if update_camp:
             fetch_campaigns = camp._fetch_campaigns(request)
@@ -204,11 +210,25 @@ def campaigns_update(request, id=None):
         # Fetch campaigns
         camp = campaignsController()
         fetch_campaigns = camp._fetch_campaigns(request, id)
+        
+        tf = timeFrameController()
+        fetch_time_frame = tf._feth_time_frame(id)
+        days_week = [
+            ('0', 'Domingo'),
+            ('1', 'Segunda'),
+            ('2', 'Terça'),
+            ('3', 'Quarta'),
+            ('4', 'Quinta'),
+            ('5', 'Sexta'),
+            ('6', 'Sábado'),
+        ]
         result = {
         'fetch_instances': [fetch_instances],
-        'fetch_campaigns': [fetch_campaigns]
+        'fetch_campaigns': [fetch_campaigns],
+        'fetch_time_frame': [fetch_time_frame],
+        'days_week': days_week
         }
-        
+        ## FALTA TERMINAR A PARTE DE SALVAR EDITAR UMA CAMPANHA!!!!!!!! TO DO 01/06/2025 DOMINGO
         return render(request, 'campaigns/campaigns_update.html', result)
 
 

@@ -16,7 +16,7 @@
     <form method="post" action="/activeut/campaigns_create/" enctype="multipart/form-data">
         {% csrf_token %}
 
-    <div>
+    <!--<div>
         <div class="mb-3 mt-4">
             <label for="messageInput" class="form-label">Nome da campanha:</label>
             <input class="form-control" type="text" name="campaigns_name" aria-label="default input example">
@@ -35,7 +35,88 @@
                 {% endfor %}
             </select>
         </div>
+    </div> -->
+
+    <div>
+        <!-- CAMPO: Nome da campanha -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Nome da campanha:</label>
+            <input class="form-control" type="text" name="campaigns_name" required>
+        </div>
+    
+        <!-- CAMPO: Descrição da campanha -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Descrição:</label>
+            <input class="form-control" type="text" name="campaigns_describe">
+        </div>
+    
+        <!-- CAMPO: Seleção de instância -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Selecione uma Instância</label>
+            <select class="form-select" name="instanceSelect" required>
+                {% for instance in fetch_instances %}
+                    {% for item in instance %}
+                        <option value="{{ item.id }}">{{ item.instance_name }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+    
+        <!-- CAMPOS DE TIMEFRAME -->
+    
+        <!-- CAMPO: Descrição da mensagem (do TimeFrame) -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Descrição do TimeFrame</label>
+            <input class="form-control" type="text" name="message_description">
+        </div>
+    
+        <!-- CAMPO: Dias permitidos -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Dias permitidos para envio:</label><br>
+            {% comment %} Checkbox com valores numéricos para o banco {% endcomment %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="0" id="dom">
+                <label class="form-check-label" for="dom">Domingo</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="1" id="seg">
+                <label class="form-check-label" for="seg">Segunda</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="2" id="ter">
+                <label class="form-check-label" for="ter">Terça</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="3" id="qua">
+                <label class="form-check-label" for="qua">Quarta</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="4" id="qui">
+                <label class="form-check-label" for="qui">Quinta</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="5" id="sex">
+                <label class="form-check-label" for="sex">Sexta</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="days_allowed" value="6" id="sab">
+                <label class="form-check-label" for="sab">Sábado</label>
+            </div>
+        </div>
+    
+        <!-- CAMPO: Hora de início -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Horário de Início:</label>
+            <input class="form-control" type="time" name="hour_begin" required>
+        </div>
+    
+        <!-- CAMPO: Hora de término -->
+        <div class="mb-3 mt-4">
+            <label class="form-label">Horário de Término:</label>
+            <input class="form-control" type="time" name="hour_end" required>
+        </div>
     </div>
+    
     <p class="lead">
         <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
     </p>

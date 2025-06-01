@@ -50,7 +50,7 @@ class messagesController(Thread):
                 media_name = ''
 
             #media_name = request.FILES['media'] if request.get('FILES') else ''
-            media_url = 'https://painel.unifytalk.com.br:444/media/'
+            media_url = 'https://200.152.191.137/media/'
 
             fetch_instance_id = campaigns.objects.filter(id=campaign_id)
             for x in fetch_instance_id:
@@ -106,7 +106,7 @@ class messagesController(Thread):
                 media_name = ''
 
             #media_name = request.FILES['media'] if request.get('FILES') else ''
-            media_url = 'https://painel.unifytalk.com.br:444/media/'
+            media_url = 'https://200.152.191.137/media/'
 
             fetch_instance_id = campaigns.objects.filter(id=campaign_id)
             for x in fetch_instance_id:
@@ -137,7 +137,7 @@ class messagesController(Thread):
 
     def _fetch_messages(self, request, id=None):
         id_customer=request.session.get('customer_user')
-        print(f"fetch messages id >>> {id}")
+        
         if id is not None:
             id_message = f"AND m.id = {id}"
             print(id_message)

@@ -6,10 +6,8 @@ from datetime import datetime
 from django.core.cache import cache
 from activeut.models import campaigns
 from activeut.models import leads_in
-from activeut.models import instances
-from activeut.models import messagens_campaigns
+from activeut.controllers.timeFrameController import timeFrameController
 from datetime import datetime
-from django.utils import timezone
 from django.db import connection
 
 
@@ -21,6 +19,7 @@ class activeUtController(Thread):
     def __init__(self):
         print("Initiate activeUt")
         self.active_threads = []
+        self.tf = timeFrameController()
 
     """
     # Create an instance of YourModel
@@ -94,7 +93,6 @@ class activeUtController(Thread):
         try:
             print("In sendMSG")
             campaign_id = request.POST['campaign_id']
-            print(campaign_id)
             handler = int(request.POST['status'])
             time_msg = 3
             # To Do Falta manipular o tempo time_msg no banco de dados
@@ -120,16 +118,15 @@ class activeUtController(Thread):
                 connection.close()
                 
                 for instances in result:
-                    print(instances)
                     INSTANCE = instances[0]
                     APIKEY = instances[1]
                     URL = instances[2]
                     MEDIA_TYPE = instances[6]
                 
-                print(f"{INSTANCE} \n")
-                print(f"{APIKEY} \n")
-                print(f"{URL} \n")
-                print(f"{MEDIA_TYPE} \n")
+                #print(f"{INSTANCE} \n")
+                #print(f"{APIKEY} \n")
+                #print(f"{URL} \n")
+                #print(f"{MEDIA_TYPE} \n")
                 
                 if MEDIA_TYPE == 'media':
                     URL = f"{URL}/sendMedia/{INSTANCE}"
@@ -170,7 +167,6 @@ class activeUtController(Thread):
                                 f"WHERE camp.id = {int(campaign_id)} AND "
                                 f"le.send_status = ''")
                 
-                print(f"Query >>> {query} >> id campaing >> {campaign_id}")
                 cursor.execute(query)
                 result = cursor.fetchall()
                 connection.close()
@@ -201,7 +197,6 @@ class activeUtController(Thread):
                 
             except Exception as e:
                 # Set campaign disabled in database
-                #self._handleCampaign(campaign_id, 0)
                 self._destroyCampaignProcess(campaign_id)
                 print(f"Error create json leads campaigns >> {e}")
             
@@ -221,6 +216,9 @@ class activeUtController(Thread):
                         # initiate loop for sended messagens campaign
                         count = len(json_data)
                         for lead in json_data:
+                            while not self.tf._time_frame(campaign_id):
+                                print(f"[{datetime.now()}] Fora do horário. Aguardando...")
+                                time.sleep(250)
                             count = count - 1
                             print(f"{lead} << Log >> {json_data[lead]['lead_name']} >> Count {count} << timestamp {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
                             if MEDIA_TYPE == 'text':
@@ -230,9 +228,7 @@ class activeUtController(Thread):
                                         "delay": 3000,
                                         "presence": "composing"
                                     },
-                                    "textMessage": {
-                                        "text": json_data[lead]['msg']
-                                    }
+                                    "text": json_data[lead]['msg']
                                 }
                             elif MEDIA_TYPE == 'media':
                                 data = {
@@ -241,11 +237,11 @@ class activeUtController(Thread):
                                         "delay": 3000,
                                         "presence": "composing"
                                     },
-                                    "mediaMessage": {
                                     "mediatype": "image",
+                                    "mimetype": "image/png",
                                     "caption": json_data[lead]['msg'],
-                                    "media": f"https://painel.unifytalk.com.br:444/media/{json_data[lead]['media_name']}"
-                                    }   
+                                    "media": f"http://200.152.191.137:8088/media/{json_data[lead]['media_name']}",
+                                    "fileName": "boleto.png0" 
                                 }
                                 #print(data)
                             try:
@@ -402,7 +398,6 @@ class activeUtController(Thread):
         except Exception as e:
             print(f"Error Disable Campaign {campaign_id} >> {e}")
             return 0
-
         
     def _convertStamp(self, timeSampt=None):
         try:
@@ -410,15 +405,14 @@ class activeUtController(Thread):
                 return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
             else:
                 return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-                messageTimestamp = timezone.datetime.fromtimestamp(int(timeSampt))
-                messageTimestamp = timezone.make_aware(messageTimestamp, timezone=timezone.utc)
-                messageTimestamp = timezone.localtime(messageTimestamp, timezone=timezone.get_current_timezone())
-                return messageTimestamp
+
         except Exception as e:
             print(f"Error convert timeStamp >>> {e}")
             return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-            messageTimestamp = datetime.fromtimestamp(int(timeSampt)).strftime('%Y-%m-%d %H:%M:%S.%f')
-            messageTimestamp =  timezone.make_aware(messageTimestamp)
-            return messageTimestamp
+    
+    
+        
+
+            
                 
 

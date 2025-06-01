@@ -39,11 +39,15 @@
                             <input class="form-check-input" type="checkbox" role="switch" id="handleCampaign"
                              data-url="{% url 'handle_campaign' %}" data-id="{{ item.id }}"
                               {% if item.enabled == 1 %}checked{% endif %}>
-                              {% if item.enabled == 1 %}
-                              <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-success">Ativo</span></label>
-                              {% elif item.enabled == 0 or item.enabled == null %}
-                              <label class="form-check-label" for="handleCampaign"><span class="badge text-bg-danger">Desativado</span></label>
-                              {% endif %}
+                              
+                              <label class="form-check-label" for="handleCampaign">
+                                <!-- DEBUG <p>DEBUG item.enabled: {{ item.enabled }} </p> -->   
+                                {% if item.enabled == 1 %}
+                                    <span class="badge text-bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge text-bg-danger">Desativado</span>
+                               {% endif %}
+                            </label>
                           </div>
                     </td>
                     <td >
@@ -115,6 +119,7 @@
     </div>
 </div>
 
+<!--
 <style>
 
     * {
@@ -177,4 +182,88 @@
         border: 1px solid #c3c3c3 !important;
     }
 </style>
+-->
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 15px;
+        color: #212529;
+    }
+
+    h3.masthead-brand {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .table th {
+        background-color: #343a40 !important;
+        color: #fff;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .form-check-input {
+        width: 2.2em;
+        height: 1.2em;
+        margin-right: 0.5em;
+        cursor: pointer;
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 5px 10px;
+        border-radius: 50px;
+    }
+
+    .badge.text-bg-success {
+        background-color: #28a745;
+    }
+
+    .badge.text-bg-danger {
+        background-color: #dc3545;
+    }
+
+    .svg-icon {
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .svg-icon:hover {
+        transform: scale(1.15);
+    }
+
+    .btn {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .lead {
+        margin-top: 2rem;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+
+    .cover-container {
+        max-width: 1000px;
+    }
+</style>
+
 {% endblock %}

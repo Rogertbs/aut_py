@@ -12,47 +12,92 @@
  
       <main role="main" class="inner cover">
         <p class="lead">Editar campanha</p>
-    
+
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
-
+    
         {% for camp in fetch_campaigns %}
-        {% for key, value in camp.items %}
-    <div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label" >ID: {{ value.id }}</label>
-            <input class="form-control" type="hidden" name="id_campaign" value="{{ value.id }}" aria-label="default input example">
-
-        </div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Nome da campanha:</label>
-            <input class="form-control" type="text" name="campaigns_name" value="{{ value.campaign_name }}" aria-label="default input example">
-        </div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Descrição:</label>
-            <input class="form-control" type="text" name="campaigns_describe" value="{{ value.campaign_describre }}" aria-label="default input example">
-        </div>
-        <div class="mb-3 dropdown mt-4">
-            <label for="formFile" class="form-label">Selecione uma Instância</label>
-            <select class="form-select" aria-label="Default select example" id="instanceSelect" name="instanceSelect">
-                {% for instance in fetch_instances %}
-                {% for item in instance %}
-                <option id="" value="{{ item.id }}" {% if item.id == value.instance_id %} selected {% endif %}>
-                    {{ item.instance_name }}</option>
+            {% for key, value in camp.items %}
+                <div>
+                    <!-- CAMPANHA -->
+                    <div class="mb-3 mt-4">
+                        <label class="form-label">ID: {{ value.id }}</label>
+                        <input class="form-control" type="hidden" name="id_campaign" value="{{ value.id }}">
+                    </div>
+    
+                    <div class="mb-3 mt-4">
+                        <label class="form-label">Nome da campanha:</label>
+                        <input class="form-control" type="text" name="campaigns_name" value="{{ value.campaign_name }}">
+                    </div>
+    
+                    <div class="mb-3 mt-4">
+                        <label class="form-label">Descrição:</label>
+                        <input class="form-control" type="text" name="campaigns_describe" value="{{ value.campaign_describre }}">
+                    </div>
+    
+                    <div class="mb-3 dropdown mt-4">
+                        <label class="form-label">Selecione uma Instância</label>
+                        <select class="form-select" name="instanceSelect">
+                            {% for instance in fetch_instances %}
+                                {% for item in instance %}
+                                    <option value="{{ item.id }}" {% if item.id == value.instance_id %} selected {% endif %}>
+                                        {{ item.instance_name }}
+                                    </option>
+                                {% endfor %}
+                            {% endfor %}
+                        </select>
+                    </div>
+    
+                    <!-- TIME FRAME -->
+                    <hr>
+                    {% for time_frame in fetch_time_frame %}
+                    <h5 class="mt-4">Janela de Envio (TimeFrame)</h5>
+    
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Descrição:</label>
+                        <input class="form-control" type="text" name="message_description" value="{{ time_frame.message_description }}">
+                    </div>
+    
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Dias permitidos:</label><br>
+                        {% for day, week_day in days_week %}
+                        {{ week_day }}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="days_allowed"
+                                       value="{{ day }}" id="day_{{ day }}_{{ value.id }}"
+                                       {% if day in time_frame.day_allowed %}checked{% endif %}>
+                                <label class="form-check-label" for="dia_{{ dia }}_{{ value.id }}">{{ nome }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+    
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Horário de Início:</label>
+                        <input class="form-control" type="time" name="hour_begin" value="{{ time_frame.hour_begin|time:"H:i" }}">
+                    </div>
+    
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Horário de Fim:</label>
+                        <input class="form-control" type="time" name="hour_end" value="{{ time_frame.hour_end|time:"H:i" }}">
+                    </div>
+                </div>
+                    
                 {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    <p class="lead">
-        <button class="btn" type="submit">
-            <i class="svg-icon svg-icon-blue" aria-hidden="true" style="display:flex; width: 35px; fill: #F1416C !important;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/></svg>    
-        </button>
-    </p>
+            {% endfor %}
+        {% endfor %}
+    
+        <p class="lead">
+            <button class="btn" type="submit">
+                <i class="svg-icon svg-icon-blue" aria-hidden="true" style="display:flex; width: 35px; fill: #F1416C !important;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+                    </svg>
+                </i>
+            </button>
+        </p>
     </form>
-    {% endfor %}
-    {% endfor %}
+    
+
     </main>
 
 </div>

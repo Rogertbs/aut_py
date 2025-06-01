@@ -6,3 +6,13 @@ activeut/__init__.py
 __init__.py
 activeut/__*
 *.pyc
+
+
+# Ignora todos os arquivos __pycache__ e .pyc
+__pycache__/
+*.py[cod]
+**/__pycache__/
+
+# Ambiente virtual Python
+venv/
+
