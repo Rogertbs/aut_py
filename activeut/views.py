@@ -190,8 +190,11 @@ def campaigns_update(request, id=None):
     if request.method == 'POST':
 
         camp = campaignsController()
-        tf = timeFrameController()
-        update_camp = camp._campaign_update(request, id) 
+        update_camp = camp._campaign_update(request, id)
+        
+        update_time_frame = timeFrameController()
+        update_time_frame._create_time_frame(request, id)
+
         if update_camp:
             fetch_campaigns = camp._fetch_campaigns(request)
             result = {
@@ -228,7 +231,7 @@ def campaigns_update(request, id=None):
         'fetch_time_frame': [fetch_time_frame],
         'days_week': days_week
         }
-        ## FALTA TERMINAR A PARTE DE SALVAR EDITAR UMA CAMPANHA!!!!!!!! TO DO 01/06/2025 DOMINGO
+        
         return render(request, 'campaigns/campaigns_update.html', result)
 
 
@@ -265,7 +268,6 @@ def dashboard_campaigns(request):
         'fetch_details': [dash["details"]]
     }
     
-
     return render(request, 'dashboards/dashboard_campaigns.html', result)
 
 #@login_required(login_url='login_user')

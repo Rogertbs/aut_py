@@ -6,7 +6,7 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Active Unify Talk</h3>
+          <h3 class="masthead-brand text-center p-4">Adicionar Leads</h3>
         </div>
     </header>
  
@@ -62,116 +62,74 @@
 
 </script>
 
-<script>
-    function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
-    }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
-    }
-</script>
-
-
-<div id="loader" style="display: none">
-    <div class="centered-content">
-        <div class="progress" style="width: 30em;">
-            <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="loading-text">Carregando...</div>
-    </div>
-</div>
-
 <style>
-
-    * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
+    body {
+        background-color: #f9f9f9;
     }
 
-    .centered-content {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
+    .cover-container {
+        max-width: 720px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
     }
 
-    .custom-spinner {
-        color: #b00707;
-        width: 12rem;
-        height: 12rem;
+    .form-label {
+        font-weight: 600;
+        color: #333;
     }
 
-    .loading-text {
-        margin-top: 10px;
-        color: #b00707;
+    .form-control,
+    .form-select {
+        border-radius: 0.5rem;
+        box-shadow: none;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #6366f1;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: #6366f1;
+        border-color: #6366f1;
+    }
+
+    .lead {
+        font-size: 1.1rem;
+        color: #555;
+        margin-top: 2rem;
+    }
+
+    button.btn {
+        padding: 0.6rem 1.8rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        background-color: #6366f1;
+        border: none;
+        border-radius: 0.5rem;
+        color: #fff;
+        transition: background-color 0.2s ease;
+    }
+
+    button.btn:hover {
+        background-color: #4f46e5;
+    }
+
+    .masthead-brand {
+        font-size: 2rem;
+        color: #6366f1;
+        font-weight: 700;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin: 2rem 0;
     }
 </style>
 
-<style>
-    table {
-        border-spacing: unset !important;
-        border-collapse: unset !important;
-    }
-
-    table tr:last-child td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tr:last-child:hover td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tbody tr td {
-        border: 1px solid #c3c3c3 !important;
-    }
-</style>
 {% endblock %}
