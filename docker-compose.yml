@@ -1,0 +1,24 @@
+services:
+
+  web:
+    container_name: rocket_client_1
+    build: .
+    command: bash scripts/create_superuser.sh
+      #command: bash -c "python3 manage.py migrate && python3 manage.py createsuperuser --noinput --username 'admin'  --email 'admin@admin.com' --password $DJANGO_SUPERUSER_PASSWORD && python3 manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/rocket_client_1
+    ports:
+      - "8001:8001"
+        #depends_on:
+        #- db
+    environment:
+      DB_HOST: mariadb_client_1
+      DB_NAME: aut
+      DB_USER: root
+      DB_PASSWORD: H@ll3y2970!
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@admin.com
+      DJANGO_SUPERUSER_PASSWORD: c0m3t@H@ll3y
+
+volumes:
+  mariadb_rocket_client_1:

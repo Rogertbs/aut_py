@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s4u&2(r7b-o=k&$!!v_7uhr(pk^&s3fdlfoxz$o#ddr8j0zkv@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["200.152.191.137"]
+ALLOWED_HOSTS = ["5.189.153.168"]
 
 
 # Application definition
@@ -87,8 +87,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'aut',
         'USER': 'root',
-        'PASSWORD': 'C@n1sm@j0r1s@#',
-        'HOST': 'localhost',
+        'PASSWORD': 'H@ll3y2970!',
+        'HOST': 'mariadb_client_1',
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',

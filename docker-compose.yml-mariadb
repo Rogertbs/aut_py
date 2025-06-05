@@ -1,0 +1,19 @@
+services:
+  db:
+    container_name: mariadb_client_1
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: H@ll3y2970!
+      MYSQL_DATABASE: aut
+      MYSQL_USER: root
+      MYSQL_PASSWORD: H@ll3y2970!
+    volumes:
+      - mariadb_rocket_client_1:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+
+
+volumes:
+  mariadb_rocket_client_1:
