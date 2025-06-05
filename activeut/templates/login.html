@@ -1,38 +1,66 @@
 {% extends 'base.html' %}
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        {% block content %}
-            <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100%">
-                <div class="w-50">
-                <h1>Login</h1>
-                <br/><br/>
-                <form action="{% url "login_user" %}" method=POST>
-                    {% csrf_token %}
-                    <form>
-                        <div class="mb-3 mt-4">
-                        <label for="exampleInputEmail1" class="form-label">Username</label>
-                        <input type="text" class="form-control" name="username">
-                        </div>
-                        <div class="mb-3 mt-4">
-                        <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password">
-                        </div>
-                        <div class="mb-3 mt-4 form-check">
-                        </div>
-                        <button type="submit" class="btn btn-secondary">Login</button>
-                    </form>
-                </form>
-            </div>
-        </div>
-        {% endblock content %}  
-    </body>
-</html>
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login</title>
+    <meta name="description" content="Página de login">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    
+        .login-container {
+            max-width: 400px;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #4361ee;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            background-color: #4361ee;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="login-container">
+            <h1>Login</h1>
+            <form action="{% url 'login_user' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" id="username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-secondary">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock content %}
