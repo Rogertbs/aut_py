@@ -1,177 +1,335 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-        <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Criar Campanha</h3>
+<div class="container py-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <h3 class="fw-bold mb-0">
+                <i class="bi bi-plus-circle-fill me-2"></i>
+                Criar Campanha
+            </h3>
+            <p class="text-white-50 mb-0 mt-2">Preencha os dados para criar uma nova campanha</p>
         </div>
-    </header>
- 
-      <main role="main" class="inner cover">
-        <p class="lead">Cadastre uma nova campanha</p>
-    
-    <form method="post" action="/activeut/campaigns_create/" enctype="multipart/form-data">
-        {% csrf_token %}
-
-    <div>
-        <!-- CAMPO: Nome da campanha -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Nome da campanha:</label>
-            <input class="form-control" type="text" name="campaigns_name" required>
-        </div>
-    
-        <!-- CAMPO: Descrição da campanha -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Descrição:</label>
-            <input class="form-control" type="text" name="campaigns_describe">
-        </div>
-    
-        <!-- CAMPO: Seleção de instância -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Selecione uma Instância</label>
-            <select class="form-select" name="instanceSelect" required>
-                {% for instance in fetch_instances %}
-                    {% for item in instance %}
-                        <option value="{{ item.id }}">{{ item.instance_name }}</option>
-                    {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
-    
-        <!-- CAMPOS DE TIMEFRAME -->
-    
-        <!-- CAMPO: Descrição da mensagem (do TimeFrame) -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Descrição do TimeFrame</label>
-            <input class="form-control" type="text" name="message_description">
-        </div>
-    
-        <!-- CAMPO: Dias permitidos -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Dias permitidos para envio:</label><br>
-            {% comment %} Checkbox com valores numéricos para o banco {% endcomment %}
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="0" id="dom">
-                <label class="form-check-label" for="dom">Domingo</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="1" id="seg">
-                <label class="form-check-label" for="seg">Segunda</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="2" id="ter">
-                <label class="form-check-label" for="ter">Terça</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="3" id="qua">
-                <label class="form-check-label" for="qua">Quarta</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="4" id="qui">
-                <label class="form-check-label" for="qui">Quinta</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="5" id="sex">
-                <label class="form-check-label" for="sex">Sexta</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="days_allowed" value="6" id="sab">
-                <label class="form-check-label" for="sab">Sábado</label>
-            </div>
-        </div>
-    
-        <!-- CAMPO: Hora de início -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Horário de Início:</label>
-            <input class="form-control" type="time" name="hour_begin" required>
-        </div>
-    
-        <!-- CAMPO: Hora de término -->
-        <div class="mb-3 mt-4">
-            <label class="form-label">Horário de Término:</label>
-            <input class="form-control" type="time" name="hour_end" required>
+        
+        <div class="card-body p-4">
+            <form method="post" action="/activeut/campaigns_create/" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-section mb-4">
+                            <h5 class="text-primary fw-semibold mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Informações Básicas
+                            </h5>
+                            
+                            <!-- CAMPO: Nome da campanha -->
+                            <div class="mb-3">
+                                <label class="form-label" for="campaigns_name">Nome da campanha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-tag text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="campaigns_name" name="campaigns_name" placeholder="Digite o nome da campanha" required>
+                                </div>
+                                <div class="form-text">Escolha um nome descritivo para identificar sua campanha</div>
+                            </div>
+                        
+                            <!-- CAMPO: Descrição da campanha -->
+                            <div class="mb-3">
+                                <label class="form-label" for="campaigns_describe">Descrição</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-card-text text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="campaigns_describe" name="campaigns_describe" placeholder="Descreva o objetivo da campanha">
+                                </div>
+                                <div class="form-text">Uma breve descrição ajuda a entender o propósito da campanha</div>
+                            </div>
+                        
+                            <!-- CAMPO: Seleção de instância -->
+                            <div class="mb-3">
+                                <label class="form-label" for="instanceSelect">Instância</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-hdd-network text-primary"></i>
+                                    </span>
+                                    <select class="form-select border-start-0" id="instanceSelect" name="instanceSelect" required>
+                                        <option value="" selected disabled>Selecione uma instância</option>
+                                        {% for instance in fetch_instances %}
+                                            {% for item in instance %}
+                                                <option value="{{ item.id }}">{{ item.instance_name }}</option>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-text">Selecione a instância que será usada para enviar as mensagens</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="form-section mb-4">
+                            <h5 class="text-primary fw-semibold mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                Configurações de Tempo
+                            </h5>
+                            
+                            <!-- CAMPO: Descrição da mensagem (do TimeFrame) -->
+                            <div class="mb-3">
+                                <label class="form-label" for="message_description">Descrição do TimeFrame</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-calendar-event text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="message_description" name="message_description" placeholder="Descreva o período de envio">
+                                </div>
+                                <div class="form-text">Uma descrição para o período de envio das mensagens</div>
+                            </div>
+                            
+                            <!-- CAMPO: Dias permitidos -->
+                            <div class="mb-4">
+                                <label class="form-label d-block">Dias permitidos para envio</label>
+                                <div class="days-selector">
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="0" id="dom">
+                                        <label class="form-check-label" for="dom">Dom</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="1" id="seg">
+                                        <label class="form-check-label" for="seg">Seg</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="2" id="ter">
+                                        <label class="form-check-label" for="ter">Ter</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="3" id="qua">
+                                        <label class="form-check-label" for="qua">Qua</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="4" id="qui">
+                                        <label class="form-check-label" for="qui">Qui</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="5" id="sex">
+                                        <label class="form-check-label" for="sex">Sex</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="6" id="sab">
+                                        <label class="form-check-label" for="sab">Sáb</label>
+                                    </div>
+                                </div>
+                                <div class="form-text">Selecione os dias da semana em que as mensagens podem ser enviadas</div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- CAMPO: Hora de início -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="hour_begin">Horário de Início</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-hourglass-top text-primary"></i>
+                                        </span>
+                                        <input class="form-control border-start-0" type="time" id="hour_begin" name="hour_begin" required>
+                                    </div>
+                                    <div class="form-text">Horário para iniciar o envio das mensagens</div>
+                                </div>
+                            
+                                <!-- CAMPO: Hora de término -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="hour_end">Horário de Término</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-hourglass-bottom text-primary"></i>
+                                        </span>
+                                        <input class="form-control border-start-0" type="time" id="hour_end" name="hour_end" required>
+                                    </div>
+                                    <div class="form-text">Horário para finalizar o envio das mensagens</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="" class="btn btn-light">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Voltar
+                    </a>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Criar Campanha
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <p class="lead">
-        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
-    </p>
-    </form>
-    </main>
 </div>
-`
 
 <style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+    }
+
     body {
-        background-color: #f9f9f9;
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-    .cover-container {
-        max-width: 720px;
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     }
-
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    .form-section {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: rgba(248, 249, 250, 0.5);
+    }
+    
     .form-label {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 0.5rem;
-        box-shadow: none;
-        border: 1px solid #ced4da;
-        transition: border-color 0.3s ease;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #6366f1;
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
-    }
-
-    .form-check-input:checked {
-        background-color: #6366f1;
-        border-color: #6366f1;
-    }
-
-    .lead {
-        font-size: 1.1rem;
-        color: #555;
-        margin-top: 2rem;
-    }
-
-    button.btn {
-        padding: 0.6rem 1.8rem;
-        font-size: 1.1rem;
         font-weight: 500;
-        background-color: #6366f1;
-        border: none;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select, .input-group-text {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    
+    .days-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .day-check {
+        margin: 0;
+        padding: 0.5rem;
         border-radius: 0.5rem;
-        color: #fff;
-        transition: background-color 0.2s ease;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
     }
-
-    button.btn:hover {
-        background-color: #4f46e5;
+    
+    .day-check:hover {
+        background-color: rgba(67, 97, 238, 0.05);
     }
-
-    .masthead-brand {
-        font-size: 2rem;
-        color: #6366f1;
-        font-weight: 700;
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
     }
-
-    hr {
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         border: none;
-        border-top: 1px solid #ddd;
-        margin: 2rem 0;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    .btn-light {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+        color: #495057;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-light:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
     }
 </style>
 
+<script>
+    // Validação de formulário
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
 {% endblock %}
+
