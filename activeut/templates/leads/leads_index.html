@@ -1,81 +1,421 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-        <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Mensagens</h3>
+<div class="container py-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="fw-bold mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        Lista de Leads
+                    </h3>
+                    <p class="text-white-50 mb-0 mt-2">Gerencie e visualize todos os leads das suas campanhas</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="" class="btn btn-light btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Novo Lead
+                    </a>
+                </div>
+            </div>
         </div>
-    </header>
- 
-      <main role="main" class="inner cover">
-        <p class="lead">Lista de Mensagens</p>
-
-
-    
-    <form class="col-12 my-2 my-lg-0" action="{% url "leads_index" %}" method=POST
-        onsubmit="return loading()">
-        {% csrf_token %}
-
-        <div class="mb-4 dropdown mt-4">
-            <p class="lead">
-                <button class="btn" type="submit" style="width: 55px;">
-                    <i class="svg-icon" aria-hidden="true" style="fill: #50CD89 !important;">
-                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>         
-                </button>
-            </p>
+        
+        <div class="card-body p-4">
+            <!-- Filtros -->
+            <form class="mb-4" action="{% url "leads_index" %}" method="POST" onsubmit="return loading()">
+                {% csrf_token %}
+                
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label for="campaignSelect" class="form-label fw-semibold">
+                            <i class="bi bi-megaphone text-primary me-1"></i>
+                            Selecione uma campanha
+                        </label>
+                        <select class="form-select" id="campaignSelect" name="campaignSelect">
+                            <option value="">Todas as campanhas</option>
+                            {% for campaign in fetch_campaigns %}
+                            {% for key, item in campaign.items %}
+                            <option value="{{ item.id }}">{{ item.campaign_name }}</option>
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="bi bi-search me-2"></i>
+                            Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Tabela de Leads -->
+            <div class="table-responsive">
+                {% if fetch_leads %}
+                <table class="table table-hover align-middle" id="campaignTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col">
+                                <i class="bi bi-hash me-1"></i>
+                                ID
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-person me-1"></i>
+                                Nome
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-telephone me-1"></i>
+                                Número
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Status do Envio
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-clock me-1"></i>
+                                Data-Hora / Envio
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead_dict in fetch_leads %}
+                        {% for key, lead in lead_dict.items %}
+                        <tr class="table-row">
+                            <td class="fw-semibold text-primary">{{ lead.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="avatar-circle me-2">
+                                        {{ lead.lead_name|first|upper }}
+                                    </div>
+                                    <span class="fw-medium">{{ lead.lead_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-whatsapp text-success me-1"></i>
+                                    {{ lead.lead_number }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if lead.send_status == 'PENDING' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Enviado
+                                </span>
+                                {% elif lead.send_status == 'False' %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    WhatsApp Não Existe
+                                </span>
+                                {% elif lead.send_status == '' %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Pendente
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Falha de Envio
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">
+                                {% if lead.send_timestamp %}
+                                <small>{{ lead.send_timestamp }}</small>
+                                {% else %}
+                                <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <!-- Estado vazio -->
+                <div class="empty-state text-center py-5">
+                    <div class="empty-icon mb-3">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">Nenhum lead encontrado</h5>
+                    <p class="text-muted mb-4">Não há leads cadastrados para exibir ou nenhum lead corresponde aos filtros aplicados.</p>
+                    <a href="" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Adicionar Primeiro Lead
+                    </a>
+                </div>
+                {% endif %}
+            </div>
         </div>
-
-        <div class="mb-4 dropdown mt-4">
-            <label for="formFile" class="form-label">Selecione uma campanha</label>
-            <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
-                {% for campaign in fetch_campaigns %}
-                {% for key, item in campaign.items %}
-                <option id="" value="{{ item.id }}">{{ item.campaign_name }}</option>
-                {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
-    
-
-        <div>
-            <table class="table table-hover" id="campaignTable">
-                <thead class="table-dark">
-                    <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Nome</th>
-                    <th scope="col">Número</th>
-                    <th scope="col">Status do envio</th>
-                    <th scope="col">Data-Hora / Envio</th>
-                    </tr>
-                </thead>
-                {% for lead_dict in fetch_leads %}
-                {% for key, lead in lead_dict.items %}
-                    <tr>
-                        <td scope="row">{{ lead.id }}</td>
-                        <td >{{ lead.lead_name }}</td>
-                        <td >{{ lead.lead_number }}</td>
-                        {% if lead.send_status == 'PENDING' %}
-                        <td><span class="badge text-bg-success">Envidado</span></td>
-                        {% elif lead.send_status == 'False' %}
-                        <td><span class="badge text-bg-warning">WhatsApp Não Existe</span></td>
-                        {% elif lead.send_status == '' %}
-                        <td><span class="badge text-bg-light">Pendente</span></td>
-                        {% else %}
-                        <td><span class="badge text-bg-danger">Falha de Envio</span></td>
-                        {% endif %}
-                        <td >{{ lead.send_timestamp }}</td>
-                    </tr>
-                {% endfor %}
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </form>
-    </main>
+    </div>
 </div>
+
+<!-- Loader -->
+<div id="loader" class="loader-overlay" style="display: none">
+    <div class="loader-content">
+        <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <div class="loading-text">Carregando leads...</div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-select {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    .btn-light {
+        background-color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--primary-color);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-light:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+    
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .table-header th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .table-row {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .table-row:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-row td {
+        border: none;
+        padding: 1rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .badge.bg-success {
+        background-color: var(--success-color) !important;
+    }
+    
+    .badge.bg-warning {
+        background-color: var(--warning-color) !important;
+    }
+    
+    .badge.bg-danger {
+        background-color: var(--danger-color) !important;
+    }
+    
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+    }
+    
+    .badge.bg-light {
+        background-color: #f8f9fa !important;
+        border: 1px solid #e9ecef !important;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+    
+    .empty-icon {
+        opacity: 0.5;
+    }
+    
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .loader-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .loading-text {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .avatar-circle {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .card-header .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-light {
+            width: 100%;
+        }
+        
+        .table-row td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .d-flex.align-items-center.justify-content-center {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .avatar-circle {
+            margin-bottom: 0 !important;
+        }
+    }
+</style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -107,7 +447,11 @@
         });
     });
 
-
+    // Função de loading
+    function loading() {
+        document.getElementById('loader').style.display = 'flex';
+        return true;
+    }
 
     // Campaign Select
     // $(document).ready(function() {
@@ -133,99 +477,7 @@
     // // function populate
     
     // });
-
-
 </script>
 
-<div id="loader" style="display: none">
-    <div class="centered-content">
-        <div class="progress" style="width: 30em;">
-            <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="loading-text">Carregando...</div>
-    </div>
-</div>
-
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 15px;
-        color: #212529;
-    }
-
-    h3.masthead-brand {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .table {
-        border-collapse: separate;
-        border-spacing: 0;
-        background-color: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    .table th {
-        background-color: #343a40 !important;
-        color: #fff;
-        font-weight: 500;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .table td {
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    .form-check-input {
-        width: 2.2em;
-        height: 1.2em;
-        margin-right: 0.5em;
-        cursor: pointer;
-    }
-
-    .badge {
-        font-size: 0.9em;
-        padding: 5px 10px;
-        border-radius: 50px;
-    }
-
-    .badge.text-bg-success {
-        background-color: #28a745;
-    }
-
-    .badge.text-bg-danger {
-        background-color: #dc3545;
-    }
-
-    .svg-icon {
-        transition: transform 0.2s ease;
-        cursor: pointer;
-    }
-
-    .svg-icon:hover {
-        transform: scale(1.15);
-    }
-
-    .btn {
-        background-color: transparent;
-        border: none;
-        padding: 0;
-    }
-
-    .lead {
-        margin-top: 2rem;
-        font-size: 1.25rem;
-        font-weight: 500;
-    }
-
-    .cover-container {
-        max-width: 1000px;
-    }
-</style>
-
 {% endblock %}
+

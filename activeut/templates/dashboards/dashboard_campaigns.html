@@ -1,239 +1,742 @@
-<!DOCTYPE html>
-
+{% extends 'base.html' %}
 {% block content %}
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-    </header>
- 
-      <main role="main" class="inner cover">
-    
-    <form method="post" action="/activeut/campaigns/" enctype="multipart/form-data">
-        {% csrf_token %}
+<div class="container py-4">
+    <!-- Cabeçalho do Dashboard -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="fw-bold mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Dashboard de Campanhas
+                    </h3>
+                    <p class="text-white-50 mb-0 mt-2">Acompanhe o desempenho das suas campanhas em tempo real</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="status-indicator">
+                        <div class="pulse-dot"></div>
+                        <span class="small">Atualizando a cada 5s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-
-    <head>
-
-        <link href="../../static/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-        <script src="../../static/bootstrap.min.js"></script>
-        <script src="../../static/jquery.min.js"></script>
+    <!-- Cards de Métricas -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card delivered">
+                <div class="metric-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalRealizadas">{{ fetch_total_delivered }}</div>
+                    <div class="metric-label">Total Entregues</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
         
-        <link rel="stylesheet" type="text/css" href="../../static/dashboards/dahsboard_campaigns/dashboard_campaigns.css" />
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card sent">
+                <div class="metric-icon">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalRespondidas">{{ fetch_total_sent }}</div>
+                    <div class="metric-label">Total Enviadas</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
         
-        <script type="text/javascript">
-
-       function attTable()
-       {
-           $( "#totalRealizadas" ).load( "dashboard_campaigns #totalRealizadas");
-           $( "#totalRespondidas" ).load( "dashboard_campaigns #totalRespondidas");
-           $( "#totalRespondidasAbaixo" ).load( "dashboard_campaigns #totalRespondidasAbaixo");
-           $( "#totalNaoRespondidas" ).load( "dashboard_campaigns #totalNaoRespondidas");
-           $( "#tempoTotal" ).load( "dashboard_campaigns #tempoTotal");
-           $( "#tempoMedio" ).load( "dashboard_campaigns #tempoMedio");
-           $( "#tableInfos" ).parent().load( "dashboard_campaigns #tableInfos");
-       }
-
-        </script>
-
-          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .dashboard-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .dashboard-title {
-      font-size: 1.2rem;
-      color: #555;
-    }
-    .dashboard-value {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #4f46e5;
-    }
-    .dashboard-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      color: #6366f1;
-    }
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    table thead {
-      background-color: #6366f1;
-      color: white;
-    }
-    table th, table td {
-      padding: 12px;
-      border: 1px solid #dee2e6;
-    }
-    .cpy {
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-  </style>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card invalid">
+                <div class="metric-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalNaoRespondidas">{{ fetch_total_false }}</div>
+                    <div class="metric-label">Números Inexistentes</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-down"></i>
+                </div>
+            </div>
+        </div>
         
-        </head>
-    <div class="container py-5">
-  <h2 class="text-center mb-4 text-primary">Campanhas em Andamento</h2>
-  <div class="row g-3">
-    <div class="col-md-4">
-      <div class="dashboard-card">
-        <div class="dashboard-icon">📨</div>
-        <div class="dashboard-title">Total Entregues</div>
-        <div class="dashboard-value">{{ fetch_total_delivered }}</div>
-      </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card active">
+                <div class="metric-icon">
+                    <i class="bi bi-broadcast"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="tempoTotal">{{ fetch_total_active }}</div>
+                    <div class="metric-label">Campanhas Ativas</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card pending">
+                <div class="metric-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="tempoMedio">{{ fetch_total_outstanding }}</div>
+                    <div class="metric-label">Total Pendentes</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-dash"></i>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-      <div class="dashboard-card">
-        <div class="dashboard-icon">✅</div>
-        <div class="dashboard-title">Total Enviadas</div>
-        <div class="dashboard-value">{{ fetch_total_sent }}</div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="dashboard-card">
-        <div class="dashboard-icon">⚠️</div>
-        <div class="dashboard-title">Números Inexistentes</div>
-        <div class="dashboard-value">{{ fetch_total_false }}</div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="dashboard-card">
-        <div class="dashboard-icon">📡</div>
-        <div class="dashboard-title">Campanhas Ativas</div>
-        <div class="dashboard-value">{{ fetch_total_active }}</div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="dashboard-card">
-        <div class="dashboard-icon">⏳</div>
-        <div class="dashboard-title">Total Pendentes</div>
-        <div class="dashboard-value">{{ fetch_total_outstanding }}</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="card mt-5">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Envios Recentes</h5>
+    <!-- Gráfico de Performance -->
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-secondary text-white p-4 border-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-graph-up-arrow me-2"></i>
+                        Performance das Campanhas
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container">
+                        <canvas id="campaignChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>Campanha</th>
-            <th>Nome do Lead</th>
-            <th>Número</th>
-            <th>Status do envio</th>
-            <th>Data / Hora</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for detail in fetch_details %}
-            {% for key, data in detail.items %}
-              <tr>
-                <td>{{ data.campaigns_name }}</td>
-                <td>{{ data.lead_name }}</td>
-                <td>{{ data.lead_number }}</td>
-                <td>{{ data.send_status }}</td>
-                <td>{{ data.send_timestamp }}</td>
-              </tr>
-            {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="text-end mt-4">
-    <span class="cpy">Active messages by Rocket</span>
-  </div>
+    <!-- Tabela de Envios Recentes -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-clock-history me-2"></i>
+                Envios Recentes
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tableInfos">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col">
+                                <i class="bi bi-megaphone me-1"></i>
+                                Campanha
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-person me-1"></i>
+                                Nome do Lead
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-telephone me-1"></i>
+                                Número
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Status do Envio
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-clock me-1"></i>
+                                Data / Hora
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detail in fetch_details %}
+                        {% for key, data in detail.items %}
+                        <tr class="table-row">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="campaign-indicator me-2"></div>
+                                    <span class="fw-medium">{{ data.campaigns_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        {{ data.lead_name|first|upper }}
+                                    </div>
+                                    <span>{{ data.lead_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-whatsapp text-success me-1"></i>
+                                    {{ data.lead_number }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if data.send_status == 'PENDING' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Enviado
+                                </span>
+                                {% elif data.send_status == 'False' %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    WhatsApp Não Existe
+                                </span>
+                                {% elif data.send_status == '' %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Pendente
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Falha de Envio
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">
+                                <small>{{ data.send_timestamp }}</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-4">
+        <span class="text-muted small">
+            <i class="bi bi-rocket-takeoff me-1"></i>
+            Active messages by Rocket Sender
+        </span>
+    </div>
 </div>
 
+<!-- Formulário oculto para manter compatibilidade -->
+<form method="post" action="/activeut/campaigns/" enctype="multipart/form-data" style="display: none;">
+    {% csrf_token %}
+</form>
 
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+        --info-color: #0dcaf0;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .bg-gradient-secondary {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    /* Status Indicator */
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #4ade80;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+        }
+    }
+    
+    /* Metric Cards */
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-card.delivered {
+        border-left-color: var(--success-color);
+    }
+    
+    .metric-card.sent {
+        border-left-color: var(--primary-color);
+    }
+    
+    .metric-card.invalid {
+        border-left-color: var(--warning-color);
+    }
+    
+    .metric-card.active {
+        border-left-color: var(--accent-color);
+    }
+    
+    .metric-card.pending {
+        border-left-color: var(--danger-color);
+    }
+    
+    .metric-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+    
+    .metric-card.delivered .metric-icon {
+        color: var(--success-color);
+    }
+    
+    .metric-card.sent .metric-icon {
+        color: var(--primary-color);
+    }
+    
+    .metric-card.invalid .metric-icon {
+        color: var(--warning-color);
+    }
+    
+    .metric-card.active .metric-icon {
+        color: var(--accent-color);
+    }
+    
+    .metric-card.pending .metric-icon {
+        color: var(--danger-color);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-trend {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+    }
+    
+    /* Chart Container */
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+    
+    /* Table Styles */
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .table-header th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .table-row {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .table-row:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-row td {
+        border: none;
+        padding: 1rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .campaign-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .badge.bg-success {
+        background-color: var(--success-color) !important;
+    }
+    
+    .badge.bg-warning {
+        background-color: var(--warning-color) !important;
+    }
+    
+    .badge.bg-danger {
+        background-color: var(--danger-color) !important;
+    }
+    
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+    }
+    
+    .badge.bg-light {
+        background-color: #f8f9fa !important;
+        border: 1px solid #e9ecef !important;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .metric-card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .metric-card {
+            padding: 1rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+        }
+        
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .avatar-circle {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .metric-card {
+            text-align: center;
+        }
+        
+        .metric-trend {
+            position: static;
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-  //attTable();
-  //setInterval(attTable, 5000);
-  $(document).ready(function() {
-    attTable();
-    // Set an interval to refresh the data every 30 seconds
-    setInterval(attTable, 5000);
-});
+    // Função para atualizar a tabela (mantida para compatibilidade)
+    function attTable() {
+        $("#totalRealizadas").load("dashboard_campaigns #totalRealizadas");
+        $("#totalRespondidas").load("dashboard_campaigns #totalRespondidas");
+        $("#totalNaoRespondidas").load("dashboard_campaigns #totalNaoRespondidas");
+        $("#tempoTotal").load("dashboard_campaigns #tempoTotal");
+        $("#tempoMedio").load("dashboard_campaigns #tempoMedio");
+        $("#tableInfos").parent().load("dashboard_campaigns #tableInfos");
+        
+        // Atualizar dados do gráfico
+        updateChartData();
+    }
+
+    // Configuração do gráfico
+    let campaignChart;
+    let chartData = {
+        labels: [],
+        datasets: [{
+            label: 'Mensagens Enviadas',
+            data: [],
+            borderColor: 'rgb(67, 97, 238)',
+            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: 'rgb(67, 97, 238)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+        }, {
+            label: 'Mensagens Entregues',
+            data: [],
+            borderColor: 'rgb(74, 222, 128)',
+            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: 'rgb(74, 222, 128)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+        }, {
+            label: 'Números Inexistentes',
+            data: [],
+            borderColor: 'rgb(251, 133, 0)',
+            backgroundColor: 'rgba(251, 133, 0, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: 'rgb(251, 133, 0)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+        }]
+    };
+
+    function initChart() {
+        const ctx = document.getElementById('campaignChart').getContext('2d');
+        campaignChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(67, 97, 238, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Tempo',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Quantidade',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverBackgroundColor: '#fff'
+                    }
+                }
+            }
+        });
+    }
+
+    function updateChartData() {
+        // Simular dados em tempo real (você pode substituir por dados reais)
+        const now = new Date();
+        const timeLabel = now.toLocaleTimeString('pt-BR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        // Obter valores atuais dos elementos (ou usar valores simulados)
+        const sent = parseInt(document.getElementById('totalRespondidas')?.textContent || Math.floor(Math.random() * 100));
+        const delivered = parseInt(document.getElementById('totalRealizadas')?.textContent || Math.floor(Math.random() * 80));
+        const invalid = parseInt(document.getElementById('totalNaoRespondidas')?.textContent || Math.floor(Math.random() * 20));
+        
+        // Adicionar novos dados
+        chartData.labels.push(timeLabel);
+        chartData.datasets[0].data.push(sent);
+        chartData.datasets[1].data.push(delivered);
+        chartData.datasets[2].data.push(invalid);
+        
+        // Manter apenas os últimos 10 pontos
+        if (chartData.labels.length > 10) {
+            chartData.labels.shift();
+            chartData.datasets.forEach(dataset => dataset.data.shift());
+        }
+        
+        // Atualizar o gráfico
+        if (campaignChart) {
+            campaignChart.update('none');
+        }
+    }
+
+    // Inicialização
+    $(document).ready(function() {
+        initChart();
+        attTable();
+        
+        // Atualizar a cada 5 segundos
+        setInterval(attTable, 5000);
+        
+        // Adicionar dados iniciais ao gráfico
+        setTimeout(updateChartData, 1000);
+    });
 </script>
 
-
-<style>
-
-    * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-    }
-
-    .centered-content {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-
-    .custom-spinner {
-        color: #b00707;
-        width: 12rem;
-        height: 12rem;
-    }
-
-    .loading-text {
-        margin-top: 10px;
-        color: #b00707;
-    }
-</style>
-
-<style>
-    table {
-        border-spacing: unset !important;
-        border-collapse: unset !important;
-    }
-
-    table tr:last-child td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tr:last-child:hover td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tbody tr td {
-        border: 1px solid #c3c3c3 !important;
-    }
-</style>
 {% endblock %}

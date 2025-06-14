@@ -57,7 +57,7 @@ def leads_in(request):
     }
 
     if request.method == 'POST':
-        csv_file = request.FILES['csvFileInput']
+        csv_file = request.FILES['csvFile']
         campaign_id = request.POST['campaignSelect']
         
         processCsv = activeUtController()
