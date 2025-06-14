@@ -113,10 +113,10 @@
             var status = $(this).prop('checked') ? 1 : 0;  // Determine the new status (checked: 1, unchecked: 0)
             
             // Mostrar loader
-            $('#loader').fadeIn(200);
+            //$('#loader').fadeIn(200);
 
             // Perform AJAX request to handle campaign
-            $.ajax({
+             $.ajax({
                 type: 'POST',
                 url: '{% url "handle_campaign" %}',
                 data: {
@@ -133,7 +133,6 @@
                     } else if (status == 0){
                        $badge.text("Desativado").removeClass().addClass("badge bg-danger");
                     }
-                    
                     // Esconder loader após sucesso
                     $('#loader').fadeOut(200);
                 },
