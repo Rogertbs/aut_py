@@ -1,0 +1,21 @@
+services:
+  rocket_0.1:
+    container_name: rocket_0.1
+    build: .
+    command: bash scripts/create_superuser.sh
+    volumes:
+      - .:/rocket_0.1
+    ports:
+      - "8002:8002"
+    environment:
+      DB_HOST: mariadb_rocket_0.1
+      DB_NAME: aut
+      DB_USER: root
+      DB_PASSWORD: H@ll3y2970!
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@admin.com
+      DJANGO_SUPERUSER_PASSWORD: c0m3t@H@ll3y
+      DJANGO_PORT: 8002
+
+volumes:
+  mariadb_rocket_0.1:
