@@ -4,10 +4,10 @@ services:
     image: mariadb:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: H@ll3y2970!
+      MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: aut
       MYSQL_USER: root
-      MYSQL_PASSWORD: H@ll3y2970!
+      MYSQL_PASSWORD: pass
     volumes:
       - mariadb_rocket_0.1:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql

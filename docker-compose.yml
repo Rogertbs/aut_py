@@ -11,10 +11,10 @@ services:
       DB_HOST: mariadb_rocket_0.1
       DB_NAME: aut
       DB_USER: root
-      DB_PASSWORD: H@ll3y2970!
+      DB_PASSWORD: pass
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_EMAIL: admin@admin.com
-      DJANGO_SUPERUSER_PASSWORD: c0m3t@H@ll3y
+      DJANGO_SUPERUSER_PASSWORD: pass
       DJANGO_PORT: 8002
 
 volumes:

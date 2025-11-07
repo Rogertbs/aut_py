@@ -138,17 +138,6 @@ class activeUtController(Thread):
                     'Content-Type': 'application/json'
                     }
                 
-                '''
-                INSTANCE_UNIFY = 'unifytalk'
-                INSTANCE_TATHI = 'thathi'
-                APIKEY_TATHI = "175CEC56-1841-4D8D-B851-48E6F700A43C"
-                APIKEY_UNIFY = "04093234-AE39-4F1A-965D-8629E7D07616"
-                URL = f"http://painel.unifytalk.com.br:8055/message/sendText/{INSTANCE_UNIFY}"
-                HEADERS = {
-                        'apikey': APIKEY_UNIFY,
-                        'Content-Type': 'application/json'
-                    }
-                '''
             elif int(handler) == 0:
                 try:
                     return self._destroyCampaignProcess(campaign_id)
@@ -240,7 +229,7 @@ class activeUtController(Thread):
                                     "mediatype": "image",
                                     "mimetype": "image/png",
                                     "caption": json_data[lead]['msg'],
-                                    "media": f"http://5.189.153.168:81/{json_data[lead]['media_name']}",
+                                    "media": f"http://YOUR_IP/{json_data[lead]['media_name']}",
                                     "fileName": f"{json_data[lead]['media_name']}" 
                                 }
                                 #print(data)

@@ -51,7 +51,7 @@ class messagesController(Thread):
                 media_name = ''
 
             #media_name = request.FILES['media'] if request.get('FILES') else ''
-            media_url = 'https://200.152.191.137/media/'
+            media_url = 'https://YOUR-IP/media/'
 
             fetch_instance_id = campaigns.objects.filter(id=campaign_id)
             for x in fetch_instance_id:
@@ -113,7 +113,7 @@ class messagesController(Thread):
                 media_name = ''
 
             #media_name = request.FILES['media'] if request.get('FILES') else ''
-            media_url = 'http://5.189.153.168:81/media/'
+            media_url = 'http://YOUR-IP/media/'
 
             fetch_instance_id = campaigns.objects.filter(id=campaign_id)
             for x in fetch_instance_id:

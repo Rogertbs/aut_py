@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s4u&2(r7b-o=k&$!!v_7uhr(pk^&s3fdlfoxz$o#ddr8j0zkv@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["5.189.153.168"]
+ALLOWED_HOSTS = ["your-ip"]
 
 
 # Application definition
@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'aut',
         'USER': 'root',
-        'PASSWORD': 'H@ll3y2970!',
+        'PASSWORD': 'pass',
         'HOST': '127.0.0.1',
         'PORT': '3307',
         'OPTIONS': {
@@ -97,7 +97,7 @@ DATABASES = {
     }
 }
 #python3 manage.py migrate
-#python3 manage.py createsuperuser --username=unify
+#python3 manage.py createsuperuser --username=user
 #python3 manage.py runserver 0.0.0.0:8888
 
 #pm2 start 'npm run start:prod' --name evolutionapi

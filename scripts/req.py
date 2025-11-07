@@ -3,15 +3,15 @@
 
 import requests, json
 
-URL = 'http://app.unifytalk.com.br:8080/message/sendText/evounifytalk'
+URL = 'http://app.com.br:8080/message/sendText/evounifytalk'
 HEADERS = {
-        'apikey': 'B6D711FCDE4D4FD5936544120E713976',
+        'apikey': 'key',
         'Content-Type': 'application/json'
         }
 
 
 data = {
-    "number": "5516992685888",
+    "number": "5516999999999",
     "options": {
         "delay": 3000,
         "presence": "composing"
