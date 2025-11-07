@@ -112,7 +112,7 @@ class activeUtController(Thread):
                                 f"JOIN activeut_instances as i "
                                 f"ON i.id = msg.instance_id " 
                                 f"WHERE camp.id = {campaign_id}")
-               
+                print(fetch_instances)
                 cursor.execute(fetch_instances)
                 result = cursor.fetchall()
                 connection.close()
@@ -123,10 +123,10 @@ class activeUtController(Thread):
                     URL = instances[2]
                     MEDIA_TYPE = instances[6]
                 
-                #print(f"{INSTANCE} \n")
-                #print(f"{APIKEY} \n")
-                #print(f"{URL} \n")
-                #print(f"{MEDIA_TYPE} \n")
+                print(f"{INSTANCE} \n")
+                print(f"{APIKEY} \n")
+                print(f"{URL} \n")
+                print(f"{MEDIA_TYPE} \n")
                 
                 if MEDIA_TYPE == 'media':
                     URL = f"{URL}/sendMedia/{INSTANCE}"
@@ -240,8 +240,8 @@ class activeUtController(Thread):
                                     "mediatype": "image",
                                     "mimetype": "image/png",
                                     "caption": json_data[lead]['msg'],
-                                    "media": f"http://200.152.191.137:8088/media/{json_data[lead]['media_name']}",
-                                    "fileName": "boleto.png0" 
+                                    "media": f"http://5.189.153.168:81/{json_data[lead]['media_name']}",
+                                    "fileName": f"{json_data[lead]['media_name']}" 
                                 }
                                 #print(data)
                             try:

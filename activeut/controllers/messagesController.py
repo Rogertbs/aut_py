@@ -32,6 +32,7 @@ class messagesController(Thread):
     def _createMessage(self, request):
         try:
             #import pdb; pdb.set_trace()
+            print(f"DEBUG: {request.POST}")
             campaign_id = request.POST['campaignSelect']
             message_description = request.POST['messageDescription']
             message = str(request.POST['messageInput'])
@@ -85,28 +86,34 @@ class messagesController(Thread):
 
     def _message_update(self, request, id=None):
         try:
+            print(f"DEBUG POST: {request.POST}")
+            print(f"DEBUG FILES: {request.FILES}")
             if request.POST['campaignSelect']:
                 campaign_id = request.POST['campaignSelect']
             else:
                 campaign_id = request.POST['campaign_id']
-            message_description = request.POST['messageDescription']
-            message = str(request.POST['messageInput'])
-            time_msg = request.POST['timeMsg']
-            created_at = self._convertStamp()
-            customer_id = request.session.get('customer_main')
-            if 'RadioMedia' in request.POST.keys():
+                message_description = request.POST['messageDescription']
+                message = str(request.POST['messageInput'])
+                time_msg = request.POST['timeMsg']
+                created_at = self._convertStamp()
+                customer_id = request.session.get('customer_main')
+            if 'messageType' in request.POST.keys():
                 media_type = 'media'
             else:
                 media_type = 'text'
             
             if len(request.FILES) != 0:
-                print(request.FILES['media'])
+                print(f"DEBUG FILES: {request.FILES['media']}")
                 media_name = request.FILES['media']
+                fs = FileSystemStorage(location='/var/www/media')
+                filename = fs.save(media_name.name, media_name)
+                file_url = fs.url(filename)
+                print("Arquivo salvo em:", file_url)
             else:
                 media_name = ''
 
             #media_name = request.FILES['media'] if request.get('FILES') else ''
-            media_url = 'https://200.152.191.137/media/'
+            media_url = 'http://5.189.153.168:81/media/'
 
             fetch_instance_id = campaigns.objects.filter(id=campaign_id)
             for x in fetch_instance_id:

@@ -88,8 +88,8 @@ DATABASES = {
         'NAME': 'aut',
         'USER': 'root',
         'PASSWORD': 'H@ll3y2970!',
-        'HOST': 'mariadb_rocket_0.1',
-        'PORT': '3306',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
         'OPTIONS': {
             'charset': 'utf8mb4',
             'use_unicode': True,
@@ -142,3 +142,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# MEDIA FILES
+MEDIA_ROOT = '/var/www/media'
+MEDIA_URL = '/media/'

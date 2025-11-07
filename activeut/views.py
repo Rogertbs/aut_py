@@ -99,7 +99,6 @@ def messages_update(request, id=None):
     if request.method == 'POST':
         
         id = request.POST['id_message']
-        print(f"ID >> {id}")
         messages = messagesController()
         update_msg = messages._message_update(request, id) 
         if update_msg:
