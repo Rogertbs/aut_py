@@ -83,5 +83,29 @@ Pull requests são bem-vindos! Para mudanças maiores, abra uma issue primeiro p
 ![WhatsApp Image 2025-11-06 at 20 54 44](https://github.com/user-attachments/assets/36da265b-d55f-41d8-af9f-f4f04be95af6)
 :
 
+### Listagem de Campanhas
+![WhatsApp Image 2025-11-06 at 20 55 46](https://github.com/user-attachments/assets/72a51686-369e-4c0b-bff0-dfc828d07cc3)
 
+### Criar Campanha
+![WhatsApp Image 2025-11-06 at 20 55 49](https://github.com/user-attachments/assets/5975505f-785a-4ae2-a48a-abe229b6bf23)
 
+### Mensagens
+
+![WhatsApp Image 2025-11-06 at 20 56 05](https://github.com/user-attachments/assets/247bac37-3ad2-4af1-8a2a-2800251fc87a)
+
+### Editar ou Criar Mensagens
+
+![WhatsApp Image 2025-11-06 at 20 56 40](https://github.com/user-attachments/assets/a6eccb69-e23a-4afe-bc21-4e3e92d5d252)
+
+### Listagem de Leads
+![WhatsApp Image 2025-11-06 at 20 57 06](https://github.com/user-attachments/assets/e8a365eb-0495-4a0c-973f-82363f1c558c)
+
+### Cadastro de Leads por CSV
+![WhatsApp Image 2025-11-06 at 20 57 24](https://github.com/user-attachments/assets/671cf517-1142-4d9d-bba7-734de29834ab)
+
+### Dashboard em Realtime
+![WhatsApp Image 2025-11-06 at 20 57 40](https://github.com/user-attachments/assets/3cc8ffc7-1174-436f-b220-b36cee2bd016)
+
+### Relatório de campanha com gráfico e download de csv.
+
+![WhatsApp Image 2025-11-06 at 20 58 07](https://github.com/user-attachments/assets/2486d4ad-a09d-41d0-a254-6897c1ad3592)
