@@ -1,0 +1,267 @@
+@font-face {
+    font-family: 'Poppins'; 
+    src: url('../activedashboard/font/Poppins-SemiBold.otf') format('opentype');
+    font-weight:bold;    
+  }
+  
+  @font-face {
+    font-family: 'Poppins'; 
+    src: url('../activedashboard/font/Poppins-Medium.otf') format('opentype');
+    font-weight:400;
+  }
+  
+  body p, body th, body td {
+    font-family: Poppins;
+    font-weight: 400 !important;
+  }
+  
+  .svg-icon {
+    display: flex;
+    width: 45px;
+    margin: auto;
+    height: 100%;
+  }
+  
+  .svg-icon-green svg {
+    fill: #50CD89 !important;
+  }
+  
+  .svg-icon-blue svg {
+    fill: #009EF7 !important;
+  }
+  
+  .svg-icon-yellow svg {
+    fill: #FFC700 !important;
+  }
+  
+  .svg-icon-red svg {
+    fill: #F1416C !important;
+  }
+  
+  .container {
+    max-width: 100%;
+  }
+  
+  .cardRes {
+    background: #d7d7d7;
+    box-shadow: 0px 15px 40px #afaeae;
+    border-radius: 15px;
+  }
+  
+  .cardAnswered {
+    background: #d7d7d7;
+    box-shadow: 0px 15px 40px #afaeae;
+    border-radius: 15px;
+  }
+  
+  .cardAnsweredLess {
+    background: #d7d7d7;
+    box-shadow: 0px 15px 40px #afaeae;
+    border-radius: 15px;
+  }
+  
+  .cardNoAnswer {
+    background: #d7d7d7;
+    box-shadow: 0px 15px 40px #afaeae;
+    border-radius: 15px;
+  }
+  
+  .cardRes-icon {
+    width: 80px;
+    height: 80px;
+    background: #928f8f;
+    border-radius: 15px;
+  }
+  
+  .cardAns-icon {
+    width: 80px;
+    height: 80px;
+    background: #928f8f;
+    border-radius: 15px;
+  }
+  
+  .cardAnsLess-icon {
+    width: 80px;
+    height: 80px;
+    background: #928f8f;
+    border-radius: 15px;
+  }
+  
+  .cardNoAns-icon {
+    width: 80px;
+    height: 80px;
+    background: #928f8f;
+    border-radius: 15px;
+  }
+  
+  .cardResP {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    color: rgba(9, 1, 1, 0.5);
+  }
+  
+  .cardAnsweredP {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    color: rgba(9, 1, 1, 0.5);
+  }
+  
+  .cardAnsweredLessP {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    color: rgba(9, 1, 1, 0.5);
+  }
+  
+  .cardNoAnswerP {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    color: rgba(9, 1, 1, 0.5);
+  }
+  .fa-user-check {
+    height: 40px;
+    color: #50CD89;
+    font-size: 40px;
+    padding-top: 25%;
+    padding-left: 20%;
+  }
+  
+  .fa-phone {
+    height: 40px;
+    color: #009EF7;
+    font-size: 40px;
+    padding-top: 25%;
+    padding-left: 20%;
+  }
+  
+  .fa-phone-slash {
+    height: 40px;
+    color: #FFC700;
+    font-size: 40px;
+    padding-top: 25%;
+    padding-left: 20%;
+  }
+  
+  .fa-user-times {
+    height: 40px;
+    color: #F1416C;
+    font-size: 40px;
+    padding-top: 25%;
+    padding-left: 20%;
+  }
+  
+  .fa-th-list {
+    color: #D51616;
+    font-size: 24px;
+  }
+  
+  .cardInfoDetail {
+    padding-left:55px;
+    padding-top:75px;
+  }
+  
+  #customers {
+    font-size: 20px;
+    width: 95%;
+    margin: auto;
+    margin-bottom: 30px;
+    margin-top: 40px;
+    border-radius: 10px 10px 20px 20px;
+  }
+  
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #928f8f;
+    color: white;
+  }
+  
+  #customers tr:nth-child(even){background-color: #FEF6F6;}
+  
+  #customers td {
+    color: black;
+    font-size: 18px;
+    padding: 18 20px;
+  }
+  
+  #logo-ezvoice {
+    padding-top: 35px;
+    padding-bottom: 35px;
+    padding-left:40px;
+  }
+  
+  #ponto {
+    padding-left:20px;
+  }
+  
+  #dashboard {
+    padding-top: 50px;
+    padding-bottom: 35px;
+    padding-left:20px;
+    flex-grow: 1;
+  }
+  
+  .containerHeader {
+    display: flex;
+  }
+  
+  .containerHeader > div {
+    flex: 4;
+  }
+  
+  
+  #logo-vetbr {
+    padding-right: 45px;
+  }
+  
+  .boxInfoDetail {
+    width: 100%;
+    left: 76px;
+    background: #FFFFFF;
+    box-shadow: 0px 15px 40px #F7F7F7;
+    border-radius: 15px;
+  }
+  
+  .contagem {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold !important;
+    font-size: 48px;
+    color: #090101;
+  }
+  
+  th {
+    padding-left: 20px;
+  }
+  
+  .cpy-year{
+    color: rgba(64, 64, 64, 0.5);
+  }
+  
+  @media only screen and (max-width: 1800px) {
+    .cardRes, .cardAnswered, .cardNoAnswer, .cardAnsweredLess {
+      height: 250px;
+    }
+  
+    .mt-20 {
+      margin-top:20px;
+    }
+  
+    .ml-12 {
+      margin-left: 12px;
+    }
+  }
+  
+  @media only screen and (max-width: 1110px) {
+    .cardRes, .cardAnswered, .cardNoAnswer, .cardAnsweredLess {
+      margin-top: 70px;
+    }
+  }
+  

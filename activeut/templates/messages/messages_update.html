@@ -5,15 +5,30 @@
     <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
         <div class="card-header bg-gradient-primary text-white p-4 border-0">
             <h3 class="fw-bold mb-0">
-                <i class="bi bi-plus-circle me-2"></i>
-                Criar Nova Mensagem
+                <i class="bi bi-pencil-square me-2"></i>
+                Editar Mensagem
             </h3>
-            <p class="text-white-50 mb-0 mt-2">Cadastre uma nova mensagem para suas campanhas</p>
+            <p class="text-white-50 mb-0 mt-2">Modifique os dados da mensagem selecionada</p>
         </div>
         
         <div class="card-body p-4">
-            <form method="post" action="/activeut/messages_create/" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% for msg in fetch_message %}
+            {% for key, value in msg.items %}
+            
+            <!-- Alert com ID da mensagem -->
+            <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <div>
+                    <strong>Editando mensagem ID:</strong> {{ value.id }}
+                </div>
+            </div>
+            
+            <form method="post" action="/activeut/messages_update/" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
+                
+                <!-- Campos ocultos -->
+                <input type="hidden" name="id_message" value="{{ value.id }}">
+                <input type="hidden" name="campaign_id" value="{{ value.campaign_id }}">
                 
                 <div class="row">
                     <div class="col-12">
@@ -31,10 +46,11 @@
                                         <i class="bi bi-megaphone text-primary"></i>
                                     </span>
                                     <select class="form-select border-start-0" id="campaignSelect" name="campaignSelect" required>
-                                        <option value="">Escolha uma campanha...</option>
                                         {% for campaign in fetch_campaigns %}
                                         {% for key, item in campaign.items %}
-                                        <option value="{{ item.id }}">{{ item.campaign_name }}</option>
+                                        <option value="{{ item.id }}" {% if value.campaign_id == item.id %} selected {% endif %}>
+                                            {{ item.campaign_name }}
+                                        </option>
                                         {% endfor %}
                                         {% endfor %}
                                     </select>
@@ -49,7 +65,7 @@
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="bi bi-card-heading text-primary"></i>
                                     </span>
-                                    <input class="form-control border-start-0" type="text" id="messageDescription" name="messageDescription" placeholder="Digite uma descrição para a mensagem" required>
+                                    <input class="form-control border-start-0" type="text" id="messageDescription" name="messageDescription" value="{{ value.message_description }}" placeholder="Digite uma descrição para a mensagem" required>
                                 </div>
                                 <div class="form-text">Uma breve descrição para identificar esta mensagem</div>
                             </div>
@@ -61,7 +77,7 @@
                                     <span class="input-group-text bg-light border-end-0 align-items-start pt-3">
                                         <i class="bi bi-chat-text text-primary"></i>
                                     </span>
-                                    <textarea class="form-control border-start-0" id="messageInput" name="messageInput" rows="5" placeholder="Digite o conteúdo da mensagem..." required></textarea>
+                                    <textarea class="form-control border-start-0" id="messageInput" name="messageInput" rows="5" placeholder="Digite o conteúdo da mensagem..." required>{{ value.message }}</textarea>
                                 </div>
                                 <div class="form-text">Escreva o conteúdo completo da mensagem que será enviada</div>
                             </div>
@@ -73,7 +89,7 @@
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="bi bi-clock text-primary"></i>
                                     </span>
-                                    <input class="form-control border-start-0" type="number" id="timeMsg" name="timeMsg" placeholder="1" min="1" required>
+                                    <input class="form-control border-start-0" type="number" id="timeMsg" name="timeMsg" value="{{ value.time_msg }}" placeholder="1" min="1" required>
                                     <span class="input-group-text bg-light">min</span>
                                 </div>
                                 <div class="form-text">Intervalo em minutos antes de enviar a próxima mensagem</div>
@@ -93,7 +109,7 @@
                                 <label class="form-label d-block">Selecione o tipo de mensagem</label>
                                 <div class="message-type-selector">
                                     <div class="form-check message-type-option">
-                                        <input class="form-check-input" type="radio" name="messageType" id="RadioText" value="text" checked>
+                                        <input class="form-check-input" type="radio" name="messageType" id="RadioText" value="text" {% if value.media_type == 'text' %}checked{% endif %}>
                                         <label class="form-check-label" for="RadioText">
                                             <div class="type-card">
                                                 <i class="bi bi-type display-6 text-info"></i>
@@ -104,7 +120,7 @@
                                     </div>
                                     
                                     <div class="form-check message-type-option">
-                                        <input class="form-check-input" type="radio" name="messageType" id="RadioMedia" value="media">
+                                        <input class="form-check-input" type="radio" name="messageType" id="RadioMedia" value="media" {% if value.media_type == 'media' %}checked{% endif %}>
                                         <label class="form-check-label" for="RadioMedia">
                                             <div class="type-card">
                                                 <i class="bi bi-image display-6 text-success"></i>
@@ -117,25 +133,50 @@
                                 <div class="form-text">Escolha se a mensagem será apenas texto ou incluirá mídia</div>
                             </div>
                             
-                            <!-- CAMPO: Upload de mídia (inicialmente oculto) -->
-                            <div class="mb-3" id="hiddenDivMedia" style="display: none;">
+                            <!-- Arquivo atual (se existir) -->
+                            {% if value.media_name != '' %}
+                            <div class="mb-3">
+                                <div class="alert alert-success d-flex align-items-center" role="alert">
+                                    <i class="bi bi-paperclip me-2"></i>
+                                    <div>
+                                        <strong>Arquivo atual:</strong> {{ value.media_name }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- CAMPO: Upload de mídia -->
+                            <div class="mb-3" id="hiddenDivMedia" style="{% if value.media_type == 'text' %}display: none;{% endif %}">
                                 <div class="media-upload-section">
                                     <h6 class="text-primary fw-semibold mb-3">
                                         <i class="bi bi-cloud-upload me-2"></i>
+                                        {% if value.media_name != '' %}
+                                        Substituir Mídia
+                                        {% else %}
                                         Upload de Mídia
+                                        {% endif %}
                                     </h6>
                                     
                                     <div class="upload-area">
                                         <div class="upload-content">
                                             <i class="bi bi-cloud-arrow-up display-4 text-muted mb-3"></i>
-                                            <h6 class="text-muted mb-2">Selecione um arquivo</h6>
-                                            <p class="text-muted small mb-3">Arraste e solte ou clique para selecionar</p>
-                                            <input type="file" id="media" name="media" class="form-control-file" accept="image/*,video/*,audio/*">
+                                            <h6 class="text-muted mb-2">
+                                                {% if value.media_name != '' %}
+                                                Selecione um novo arquivo para substituir
+                                                {% else %}
+                                                Selecione um arquivo
+                                                {% endif %}
+                                            </h6>
+                                            <p class="text-muted small mb-3">Arraste e solte ou clique para selecionar</p>                
                                         </div>
+                                        <input type="file" id="media" name="media" class="form-control-file" accept="image/*,video/*,audio/*">
                                     </div>
                                     
                                     <div class="form-text mt-2">
                                         <strong>Formatos aceitos:</strong> Imagens (JPG, PNG, GIF), Vídeos (MP4, AVI), Áudios (MP3, WAV)
+                                        {% if value.media_name != '' %}
+                                        <br><small class="text-warning">Deixe em branco para manter o arquivo atual</small>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -150,10 +191,13 @@
                     </a>
                     <button class="btn btn-primary" type="submit">
                         <i class="bi bi-check-circle me-2"></i>
-                        Criar Mensagem
+                        Salvar Alterações
                     </button>
                 </div>
             </form>
+            
+            {% endfor %}
+            {% endfor %}
         </div>
     </div>
 </div>
@@ -331,6 +375,11 @@
         transform: translateY(-2px);
     }
     
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    
     /* Animações */
     @keyframes fadeIn {
         from {
@@ -462,7 +511,7 @@
                const uploadContent = uploadArea.querySelector('.upload-content');
                uploadContent.innerHTML = `
                    <i class="bi bi-check-circle display-4 text-success mb-3"></i>
-                   <h6 class="text-success mb-2">Arquivo selecionado</h6>
+                   <h6 class="text-success mb-2">Novo arquivo selecionado</h6>
                    <p class="text-muted small mb-0">${file.name}</p>
                `;
                uploadArea.style.borderColor = 'var(--success-color)';

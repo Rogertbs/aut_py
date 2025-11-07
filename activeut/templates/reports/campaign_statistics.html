@@ -1,0 +1,811 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-4">
+    <!-- Cabeçalho do Relatório -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="fw-bold mb-0">
+                        <i class="bi bi-file-earmark-bar-graph me-2"></i>
+                        Relatório de Envios de Campanhas
+                    </h3>
+                    <p class="text-white-50 mb-0 mt-2">Análise detalhada do desempenho das suas campanhas</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="status-indicator">
+                        <i class="bi bi-graph-up text-white"></i>
+                        <span class="small">Estatísticas Detalhadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Filtros -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-gradient-secondary text-white p-3 border-0">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-funnel me-2"></i>
+                Filtros e Configurações
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <form class="row g-3" action="{% url "reports" %}" method="POST" onsubmit="return loading()">
+                {% csrf_token %}
+                
+                <div class="col-md-8">
+                    <label for="campaignSelect" class="form-label fw-semibold">
+                        <i class="bi bi-megaphone me-1"></i>
+                        Selecione uma campanha
+                    </label>
+                    <select class="form-select form-select-lg" id="campaignSelect" name="campaignSelect">
+                        <option value="">Escolha uma campanha...</option>
+                        {% for campaign in fetch_campaigns %}
+                        {% for key, item in campaign.items %}
+                        <option value="{{ item.id }}">{{ item.campaign_name }}</option>
+                        {% endfor %}
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Selecione uma campanha para visualizar suas estatísticas detalhadas
+                    </div>
+                </div>
+                
+                <div class="col-md-4 d-flex flex-column justify-content-end">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="csv" id="csvCheck">
+                        <label class="form-check-label fw-semibold" for="csvCheck">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                            Gerar arquivo CSV
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search me-2"></i>
+                        Gerar Relatório
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card leads">
+                <div class="metric-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalLeads">
+                        {% for tl in total_leads %}{{ tl }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Total Leads</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card sent">
+                <div class="metric-icon">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalSent">
+                        {% for ts in total_sent %}{{ ts }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Total Enviadas</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card delivered">
+                <div class="metric-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalDelivered">
+                        {% for td in total_delivered %}{{ td }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Total Entregues</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card invalid">
+                <div class="metric-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalFalse">
+                        {% for tf in total_false %}{{ tf }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Números Inexistentes</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card pending">
+                <div class="metric-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalOutstanding">
+                        {% for to in total_outstanding %}{{ to }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Números Pendentes</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-dash"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="metric-card errors">
+                <div class="metric-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-value" id="totalErrors">
+                        {% for te in total_errors %}{{ te }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Total Erros</div>
+                </div>
+                <div class="metric-trend">
+                    <i class="bi bi-arrow-down"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Estatísticas -->
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-secondary text-white p-4 border-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-graph-up-arrow me-2"></i>
+                        Análise Estatística da Campanha
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container">
+                        <canvas id="statisticsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Leads Detalhada -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-table me-2"></i>
+                Detalhamento dos Leads
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="campaignTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col">
+                                <i class="bi bi-hash me-1"></i>
+                                ID
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-person me-1"></i>
+                                Nome
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-telephone me-1"></i>
+                                Número
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Status do Envio
+                            </th>
+                            <th scope="col">
+                                <i class="bi bi-clock me-1"></i>
+                                Data-Hora / Envio
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead_dict in fetch_leads %}
+                        {% for key, lead in lead_dict.items %}
+                        <tr class="table-row">
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ lead.id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        {{ lead.lead_name|first|upper }}
+                                    </div>
+                                    <span>{{ lead.lead_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-whatsapp text-success me-1"></i>
+                                    {{ lead.lead_number }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if lead.send_status == 'PENDING' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Enviado
+                                </span>
+                                {% elif lead.send_status == 'False' %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    WhatsApp Não Existe
+                                </span>
+                                {% elif lead.send_status == '' %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Pendente
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Falha de Envio
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">
+                                <small>{{ lead.send_timestamp }}</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-4">
+        <span class="text-muted small">
+            <i class="bi bi-rocket-takeoff me-1"></i>
+            Relatório gerado pelo Rocket Sender
+        </span>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+        --info-color: #0dcaf0;
+        --leads-color: #6366f1;
+        --errors-color: #dc2626;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .bg-gradient-secondary {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    /* Status Indicator */
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Metric Cards */
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-card.leads {
+        border-left-color: var(--leads-color);
+    }
+    
+    .metric-card.sent {
+        border-left-color: var(--primary-color);
+    }
+    
+    .metric-card.delivered {
+        border-left-color: var(--success-color);
+    }
+    
+    .metric-card.invalid {
+        border-left-color: var(--warning-color);
+    }
+    
+    .metric-card.pending {
+        border-left-color: var(--info-color);
+    }
+    
+    .metric-card.errors {
+        border-left-color: var(--errors-color);
+    }
+    
+    .metric-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+    
+    .metric-card.leads .metric-icon {
+        color: var(--leads-color);
+    }
+    
+    .metric-card.sent .metric-icon {
+        color: var(--primary-color);
+    }
+    
+    .metric-card.delivered .metric-icon {
+        color: var(--success-color);
+    }
+    
+    .metric-card.invalid .metric-icon {
+        color: var(--warning-color);
+    }
+    
+    .metric-card.pending .metric-icon {
+        color: var(--info-color);
+    }
+    
+    .metric-card.errors .metric-icon {
+        color: var(--errors-color);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-trend {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+    }
+    
+    /* Chart Container */
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+    
+    /* Table Styles */
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .table-header th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .table-row {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .table-row:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-row td {
+        border: none;
+        padding: 1rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .badge.bg-success {
+        background-color: var(--success-color) !important;
+    }
+    
+    .badge.bg-warning {
+        background-color: var(--warning-color) !important;
+    }
+    
+    .badge.bg-danger {
+        background-color: var(--danger-color) !important;
+    }
+    
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+    }
+    
+    .badge.bg-light {
+        background-color: #f8f9fa !important;
+        border: 1px solid #e9ecef !important;
+    }
+    
+    /* Form Styles */
+    .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .form-check-input {
+        width: 2rem;
+        height: 1rem;
+        border-radius: 1rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .metric-card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .metric-card {
+            padding: 1rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+        }
+        
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .avatar-circle {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .metric-card {
+            text-align: center;
+        }
+        
+        .metric-trend {
+            position: static;
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    // Configuração do gráfico de estatísticas
+    let statisticsChart;
+    
+    function initStatisticsChart() {
+        const ctx = document.getElementById('statisticsChart').getContext('2d');
+        
+        // Obter valores das métricas
+        const totalLeads = parseInt(document.getElementById('totalLeads')?.textContent || 0);
+        const totalSent = parseInt(document.getElementById('totalSent')?.textContent || 0);
+        const totalDelivered = parseInt(document.getElementById('totalDelivered')?.textContent || 0);
+        const totalFalse = parseInt(document.getElementById('totalFalse')?.textContent || 0);
+        const totalOutstanding = parseInt(document.getElementById('totalOutstanding')?.textContent || 0);
+        const totalErrors = parseInt(document.getElementById('totalErrors')?.textContent || 0);
+        
+        const chartData = {
+            labels: ['Total Leads', 'Total Enviadas', 'Total Entregues', 'Números Inexistentes', 'Números Pendentes', 'Total Erros'],
+            datasets: [{
+                label: 'Estatísticas da Campanha',
+                data: [totalLeads, totalSent, totalDelivered, totalFalse, totalOutstanding, totalErrors],
+                borderColor: [
+                    'rgb(99, 102, 241)',    // Leads - Roxo
+                    'rgb(67, 97, 238)',     // Enviadas - Azul
+                    'rgb(74, 222, 128)',    // Entregues - Verde
+                    'rgb(251, 133, 0)',     // Inexistentes - Laranja
+                    'rgb(13, 202, 240)',    // Pendentes - Ciano
+                    'rgb(220, 38, 38)'      // Erros - Vermelho
+                ],
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.1)',
+                    'rgba(67, 97, 238, 0.1)',
+                    'rgba(74, 222, 128, 0.1)',
+                    'rgba(251, 133, 0, 0.1)',
+                    'rgba(13, 202, 240, 0.1)',
+                    'rgba(220, 38, 38, 0.1)'
+                ],
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: [
+                    'rgb(99, 102, 241)',
+                    'rgb(67, 97, 238)',
+                    'rgb(74, 222, 128)',
+                    'rgb(251, 133, 0)',
+                    'rgb(13, 202, 240)',
+                    'rgb(220, 38, 38)'
+                ],
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 8,
+                pointHoverRadius: 10
+            }]
+        };
+        
+        statisticsChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(67, 97, 238, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' ' + context.label.toLowerCase();
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Métricas',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            },
+                            maxRotation: 45
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Quantidade',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverBackgroundColor: '#fff'
+                    }
+                }
+            }
+        });
+    }
+
+    // Função de loading (mantida para compatibilidade)
+    function loading() {
+        // Adicionar loader se necessário
+        return true;
+    }
+
+    // Inicialização
+    $(document).ready(function() {
+        // Inicializar gráfico
+        initStatisticsChart();
+        
+        // Event delegation para switches de campanha (mantido para compatibilidade)
+        $('#campaignTable').on('click', '#handleCampaign', function() {
+            var campaignId = $(this).data('id');
+            var status = $(this).prop('checked') ? 1 : 0;
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "handle_campaign" %}',
+                data: {
+                    'campaign_id': campaignId,
+                    'status': status,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+

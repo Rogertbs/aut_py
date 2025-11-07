@@ -101,3 +101,21 @@ class messagens_campaigns(models.Model):
 
 
 # Todo update created_at in customers auto now add...
+
+# Create model table time frame campaigns
+class time_frames(models.Model):
+    id = models.AutoField(primary_key=True)
+    campaign_id = models.IntegerField(null=True)
+    message_description = models.CharField(max_length=200, null=True)
+    days_allowed = models.CharField(max_length=20, help_text="List days alloweds (ex: 0,1,2,3,4)")
+    hour_begin = models.TimeField()
+    hour_end =  models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def get_days_allowed(self):
+        """Retorna a lista de inteiros com os dias da semana permitidos"""
+        return [int(d) for d in self.days_allowed.split(',')]
+
+    def __str__(self):
+        return f"Envio das {self.hour_begin} às {self.hour_end} - dias {self.days_allowed}"
+    

@@ -8,15 +8,24 @@ urlpatterns = [
     
     path('campaigns_index/', views.campaigns_index, name='campaigns_index'),
     path('campaigns_create/', views.campaigns_create, name='campaigns_create'),
+    path('campaigns_update/<int:id>/', views.campaigns_update, name='campaigns_update'),
     path('handle_campaign/', views.handle_campaign, name='handle_campaign'),
     
     path('messages_index/', views.messages_index, name='messages_index'),
     path('messages_create/', views.messages_create, name='messages_create'),
+    path('messages_update/<int:id>/', views.messages_update, name='messages_update'),
+    path('messages_update/', views.messages_update, name='messages_update'),
     
     
     path('leads_in/', views.leads_in, name='leads_in'),
     path('leads_index/', views.leads_index, name='leads_index'),
-    #path('/leads_index/leads_index_table/', views.leads_index_table, name='leads_index_table'),
+    
+    
+    path('dashboard_campaigns', views.dashboard_campaigns, name='dashboard_campaigns'),
+    path('dashboards_statistics', views.dashboards_statistics, name='dashboards_statistics'),
+
+    path('reports', views.reports_statistics, name='reports'),
+
             
     path("", views.index, name="index"),
 ]

@@ -1,179 +1,500 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-        <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Active Unify Talk</h3>
+<div class="container py-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="fw-bold mb-0">
+                        <i class="bi bi-upload me-2"></i>
+                        Importar Leads
+                    </h3>
+                    <p class="text-white-50 mb-0 mt-2">Faça upload de um arquivo CSV para adicionar leads em massa</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'leads_index' %}" class="btn btn-light btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Voltar
+                    </a>
+                </div>
+            </div>
         </div>
-    </header>
- 
-      <main role="main" class="inner cover">
-    
-    <form method="post" action="/activeut/leads_in/" enctype="multipart/form-data">
-        {% csrf_token %}
-    <label for="formFile" class="form-label">Selecione um arquivo csv</label>
-    <input class="form-control" type="file" id="csvFileInput" name="csvFileInput" accept=".csv">
-    
-    <div class="mb-3 dropdown mt-4">
-        <label for="formFile" class="form-label">Selecione uma campanha</label>
-        <select class="form-select" aria-label="Default select example" id="campaignSelect" name="campaignSelect">
-            {% for campaign in fetch_campaigns %}
-            {% for item in campaign %}
-            <option id="" value="{{ item.id }}">{{ item.campaigns_name }}</option>
-            {% endfor %}
-            {% endfor %}
-        </select>
+        
+        <div class="card-body p-4">
+            <!-- Instruções do CSV -->
+            <div class="alert alert-info border-0 mb-4" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill me-3 mt-1 text-info"></i>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-2">Formato do arquivo CSV</h6>
+                        <p class="mb-2">O arquivo CSV deve seguir o formato abaixo, com ponto e vírgula (;) como separador:</p>
+                        <div class="bg-light p-3 rounded border">
+                            <code class="text-dark">
+                                <strong>nome;numero</strong><br>
+                                João Silva;5511987654321<br>
+                                Maria Oliveira;5511976543210<br>
+                                Pedro Santos;5511965432109
+                            </code>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Importante: Não inclua cabeçalhos no arquivo. O número deve conter apenas dígitos (sem símbolos ou espaços).
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário de Upload -->
+            <form action="{% url 'leads_in' %}" method="POST" enctype="multipart/form-data" onsubmit="return loading()">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    <!-- Seleção de Campanha -->
+                    <div class="col-12">
+                        <label for="campaignSelect" class="form-label fw-semibold">
+                            <i class="bi bi-megaphone text-primary me-1"></i>
+                            Selecione a campanha
+                        </label>
+                        <select class="form-select" id="campaignSelect" name="campaignSelect" required>
+                            <option value="">Escolha uma campanha...</option>
+                            {% for campaign in fetch_campaigns %}
+                            {% for key, item in campaign.items %}
+                            <option value="{{ item.id }}">{{ item.campaign_name }}</option>
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Os leads serão associados à campanha selecionada
+                        </div>
+                    </div>
+
+                    <!-- Upload de Arquivo -->
+                    <div class="col-12">
+                        <label for="csvFile" class="form-label fw-semibold">
+                            <i class="bi bi-file-earmark-spreadsheet text-primary me-1"></i>
+                            Arquivo CSV
+                        </label>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content text-center">
+                                <i class="bi bi-cloud-upload display-4 text-primary mb-3"></i>
+                                <h5 class="mb-2">Arraste o arquivo CSV aqui</h5>
+                                <p class="text-muted mb-3">ou clique para selecionar</p>
+                                <input type="file" class="form-control d-none" id="csvFile" name="csvFile" accept=".csv" required>
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('csvFile').click()">
+                                    <i class="bi bi-folder2-open me-2"></i>
+                                    Escolher Arquivo
+                                </button>
+                            </div>
+                            <div class="file-info d-none" id="fileInfo">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-check text-success me-2"></i>
+                                        <span id="fileName" class="fw-medium"></span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile()">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Apenas arquivos CSV são aceitos (máximo 5MB)
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="col-12">
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="{% url 'leads_index' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload me-2"></i>
+                                Importar Leads
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Exemplo de Download -->
+            <div class="mt-4 pt-4 border-top">
+                <h6 class="fw-bold mb-3">
+                    <i class="bi bi-download me-2"></i>
+                    Arquivo de Exemplo
+                </h6>
+                <p class="text-muted mb-3">Baixe um arquivo de exemplo para usar como modelo:</p>
+                <button type="button" class="btn btn-outline-info" onclick="downloadExample()">
+                    <i class="bi bi-download me-2"></i>
+                    Baixar Exemplo CSV
+                </button>
+            </div>
+        </div>
     </div>
-    <p class="lead">
-        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
-    </p>
-    </form>
-    </main>
-    <footer class="mastfoot mt-5">
-        <div class="inner">
-          <p>Active messages by UnifyTalk.</p>
-        </div>
-      </footer>
 </div>
 
+<!-- Loader -->
+<div id="loader" class="loader-overlay" style="display: none">
+    <div class="loader-content">
+        <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <div class="loading-text">Importando leads...</div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+        --info-color: #0dcaf0;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-select, .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-select:focus, .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    .btn-light {
+        background-color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--primary-color);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-light:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+    
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-info {
+        border-color: var(--info-color);
+        color: var(--info-color);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-info:hover {
+        background-color: var(--info-color);
+        border-color: var(--info-color);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-danger {
+        border-color: var(--danger-color);
+        color: var(--danger-color);
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+    
+    .alert-info {
+        background-color: rgba(13, 202, 240, 0.1);
+        border-left: 4px solid var(--info-color);
+    }
+    
+    .upload-area {
+        border: 2px dashed #e9ecef;
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        background-color: #fafbfc;
+        cursor: pointer;
+    }
+    
+    .upload-area:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .upload-area.dragover {
+        border-color: var(--primary-color);
+        background-color: rgba(67, 97, 238, 0.1);
+        transform: scale(1.02);
+    }
+    
+    .file-info {
+        background-color: rgba(76, 201, 128, 0.1);
+        border: 1px solid var(--success-color);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .loader-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .loading-text {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .upload-area {
+            padding: 1.5rem 1rem;
+        }
+        
+        .card-header .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-light {
+            width: 100%;
+        }
+        
+        .d-flex.gap-3.justify-content-end {
+            flex-direction: column;
+        }
+        
+        .d-flex.gap-3.justify-content-end .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    function uploadCSV() {
-       
-       const fileInput = document.getElementById('csvFileInput');
-       const formData = new FormData();
-
-       const campaignSelect = document.getElementById('campaignSelect').value;
-       formData.append('campaignSelect', textInput);
-
-       formData.append('csvFile', fileInput.files[0]);
-       console.log(formData)
-       try {
-           const response = fetch('/activeut/leads_in', {
-               method: 'POST',
-               body: formData
-           });
-           console.log('File uploaded successfully.');
-           //alert("O dados foram enviados com sucesso!")
-       } catch (error) {
-           console.error('Error uploading file:', error);
-       }
-   }
-
-</script>
-
-<script>
+    // Função de loading
     function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
+        document.getElementById('loader').style.display = 'flex';
         return true;
     }
 
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
+    // Drag and Drop functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('csvFile');
+    const fileInfo = document.getElementById('fileInfo');
+    const uploadContent = uploadArea.querySelector('.upload-content');
+    const fileName = document.getElementById('fileName');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    // Handle dropped files
+    uploadArea.addEventListener('drop', handleDrop, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight(e) {
+        uploadArea.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+        uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect();
         }
     }
 
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
+    // Handle file selection
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect() {
+        const file = fileInput.files[0];
+        if (file) {
+            if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                fileName.textContent = file.name;
+                uploadContent.classList.add('d-none');
+                fileInfo.classList.remove('d-none');
+            } else {
+                alert('Por favor, selecione apenas arquivos CSV.');
+                fileInput.value = '';
+            }
         }
     }
 
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
+    // Remove file
+    function removeFile() {
+        fileInput.value = '';
+        uploadContent.classList.remove('d-none');
+        fileInfo.classList.add('d-none');
+    }
+
+    // Download example CSV
+    function downloadExample() {
+        const csvContent = "nome;numero\nJoão Silva;5511987654321\nMaria Oliveira;5511976543210\nPedro Santos;5511965432109";
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'exemplo_leads.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     }
 
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
+    // Click area to select file
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target === uploadArea || e.target.closest('.upload-content')) {
+            fileInput.click();
         }
-    }
+    });
 </script>
 
-
-<div id="loader" style="display: none">
-    <div class="centered-content">
-        <div class="progress" style="width: 30em;">
-            <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="loading-text">Carregando...</div>
-    </div>
-</div>
-
-<style>
-
-    * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-    }
-
-    .centered-content {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-
-    .custom-spinner {
-        color: #b00707;
-        width: 12rem;
-        height: 12rem;
-    }
-
-    .loading-text {
-        margin-top: 10px;
-        color: #b00707;
-    }
-</style>
-
-<style>
-    table {
-        border-spacing: unset !important;
-        border-collapse: unset !important;
-    }
-
-    table tr:last-child td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tr:last-child:hover td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tbody tr td {
-        border: 1px solid #c3c3c3 !important;
-    }
-</style>
 {% endblock %}
+

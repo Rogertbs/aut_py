@@ -1,229 +1,335 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-        <div class="inner">
-          <h3 class="masthead-brand text-center p-4">Criar Campanha</h3>
+<div class="container py-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white p-4 border-0">
+            <h3 class="fw-bold mb-0">
+                <i class="bi bi-plus-circle-fill me-2"></i>
+                Criar Campanha
+            </h3>
+            <p class="text-white-50 mb-0 mt-2">Preencha os dados para criar uma nova campanha</p>
         </div>
-    </header>
- 
-      <main role="main" class="inner cover">
-        <p class="lead">Cadastre uma nova campanha</p>
+        
+        <div class="card-body p-4">
+            <form method="post" action="/activeut/campaigns_create/" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-section mb-4">
+                            <h5 class="text-primary fw-semibold mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Informações Básicas
+                            </h5>
+                            
+                            <!-- CAMPO: Nome da campanha -->
+                            <div class="mb-3">
+                                <label class="form-label" for="campaigns_name">Nome da campanha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-tag text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="campaigns_name" name="campaigns_name" placeholder="Digite o nome da campanha" required>
+                                </div>
+                                <div class="form-text">Escolha um nome descritivo para identificar sua campanha</div>
+                            </div>
+                        
+                            <!-- CAMPO: Descrição da campanha -->
+                            <div class="mb-3">
+                                <label class="form-label" for="campaigns_describe">Descrição</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-card-text text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="campaigns_describe" name="campaigns_describe" placeholder="Descreva o objetivo da campanha">
+                                </div>
+                                <div class="form-text">Uma breve descrição ajuda a entender o propósito da campanha</div>
+                            </div>
+                        
+                            <!-- CAMPO: Seleção de instância -->
+                            <div class="mb-3">
+                                <label class="form-label" for="instanceSelect">Instância</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-hdd-network text-primary"></i>
+                                    </span>
+                                    <select class="form-select border-start-0" id="instanceSelect" name="instanceSelect" required>
+                                        <option value="" selected disabled>Selecione uma instância</option>
+                                        {% for instance in fetch_instances %}
+                                            {% for item in instance %}
+                                                <option value="{{ item.id }}">{{ item.instance_name }}</option>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-text">Selecione a instância que será usada para enviar as mensagens</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="form-section mb-4">
+                            <h5 class="text-primary fw-semibold mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                Configurações de Tempo
+                            </h5>
+                            
+                            <!-- CAMPO: Descrição da mensagem (do TimeFrame) -->
+                            <div class="mb-3">
+                                <label class="form-label" for="message_description">Descrição do TimeFrame</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-calendar-event text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-start-0" type="text" id="message_description" name="message_description" placeholder="Descreva o período de envio">
+                                </div>
+                                <div class="form-text">Uma descrição para o período de envio das mensagens</div>
+                            </div>
+                            
+                            <!-- CAMPO: Dias permitidos -->
+                            <div class="mb-4">
+                                <label class="form-label d-block">Dias permitidos para envio</label>
+                                <div class="days-selector">
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="0" id="dom">
+                                        <label class="form-check-label" for="dom">Dom</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="1" id="seg">
+                                        <label class="form-check-label" for="seg">Seg</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="2" id="ter">
+                                        <label class="form-check-label" for="ter">Ter</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="3" id="qua">
+                                        <label class="form-check-label" for="qua">Qua</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="4" id="qui">
+                                        <label class="form-check-label" for="qui">Qui</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="5" id="sex">
+                                        <label class="form-check-label" for="sex">Sex</label>
+                                    </div>
+                                    <div class="form-check form-check-inline day-check">
+                                        <input class="form-check-input" type="checkbox" name="days_allowed" value="6" id="sab">
+                                        <label class="form-check-label" for="sab">Sáb</label>
+                                    </div>
+                                </div>
+                                <div class="form-text">Selecione os dias da semana em que as mensagens podem ser enviadas</div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- CAMPO: Hora de início -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="hour_begin">Horário de Início</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-hourglass-top text-primary"></i>
+                                        </span>
+                                        <input class="form-control border-start-0" type="time" id="hour_begin" name="hour_begin" required>
+                                    </div>
+                                    <div class="form-text">Horário para iniciar o envio das mensagens</div>
+                                </div>
+                            
+                                <!-- CAMPO: Hora de término -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="hour_end">Horário de Término</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-hourglass-bottom text-primary"></i>
+                                        </span>
+                                        <input class="form-control border-start-0" type="time" id="hour_end" name="hour_end" required>
+                                    </div>
+                                    <div class="form-text">Horário para finalizar o envio das mensagens</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="" class="btn btn-light">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Voltar
+                    </a>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Criar Campanha
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4ade80;
+        --warning-color: #fb8500;
+        --danger-color: #ef476f;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
     
-    <form method="post" action="/activeut/campaigns_create/" enctype="multipart/form-data">
-        {% csrf_token %}
-
-    <div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Nome da campanha:</label>
-            <input class="form-control" type="text" name="campaigns_name" aria-label="default input example">
-        </div>
-        <div class="mb-3 mt-4">
-            <label for="messageInput" class="form-label">Descrição:</label>
-            <input class="form-control" type="text" name="campaigns_describe" aria-label="default input example">
-        </div>
-        <div class="mb-3 dropdown mt-4">
-            <label for="formFile" class="form-label">Selecione uma Instância</label>
-            <select class="form-select" aria-label="Default select example" id="instanceSelect" name="instanceSelect">
-                {% for instance in fetch_instances %}
-                {% for item in instance %}
-                <option id="" value="{{ item.id }}">{{ item.instance_name }}</option>
-                {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    <p class="lead">
-        <button class="btn btn-lg btn-secondary" type="submit">Enviar</button>
-    </p>
-    </form>
-    </main>
-    <footer class="mastfoot mt-5">
-        <div class="inner">
-          <p>Active messages by UnifyTalk.</p>
-        </div>
-      </footer>
-</div>
-
-<script>
-    function uploadCSV() {
-       
-       const fileInput = document.getElementById('csvFileInput');
-       const formData = new FormData();
-
-       const textInput = document.getElementById('messageInput').value;
-       formData.append('messageInput', textInput);
-
-       const campaignSelect = document.getElementById('instanceSelect').value;
-       formData.append('instanceSelect', textInput);
-
-       formData.append('csvFile', fileInput.files[0]);
-       console.log(formData)
-       try {
-           const response = fetch('/activeut/home', {
-               method: 'POST',
-               body: formData
-           });
-           console.log('File uploaded successfully.');
-           //alert("O dados foram enviados com sucesso!")
-       } catch (error) {
-           console.error('Error uploading file:', error);
-       }
-   }
-
-   // Functions olds
-   function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
     }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
     }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .form-section {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: rgba(248, 249, 250, 0.5);
     }
-</script>
-
-<script>
-    function loading() {
-        document.getElementById('content_table').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        return true;
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
     }
-
-    var selectElement = document.getElementById("user");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ user }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .form-control, .form-select, .input-group-text {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
     }
-
-    var selectElement = document.getElementById("exten");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ exten }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
     }
-
-    var selectElement = document.getElementById("server");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ server }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
     }
-
-    var selectElement = document.getElementById("channel");
-    for (var i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].value === "{{ channel }}") {
-            selectElement.options[i].selected = true;
-            break;
-        }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
     }
-</script>
-
-
-<div id="loader" style="display: none">
-    <div class="centered-content">
-        <div class="progress" style="width: 30em;">
-            <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="loading-text">Carregando...</div>
-    </div>
-</div>
-
-<style>
-
-    * {
-        padding: 0;
+    
+    .days-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .day-check {
         margin: 0;
-        box-sizing: border-box;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
     }
-
-    .centered-content {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
+    
+    .day-check:hover {
+        background-color: rgba(67, 97, 238, 0.05);
     }
-
-    .custom-spinner {
-        color: #b00707;
-        width: 12rem;
-        height: 12rem;
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
     }
-
-    .loading-text {
-        margin-top: 10px;
-        color: #b00707;
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    .btn-light {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+        color: #495057;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-light:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
     }
 </style>
 
-<style>
-    table {
-        border-spacing: unset !important;
-        border-collapse: unset !important;
-    }
+<script>
+    // Validação de formulário
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
 
-    table tr:last-child td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tr:last-child:hover td:first-child {
-        -moz-border-radius: 0 0 0 6px;
-        -webkit-border-radius: 0 0 0 6px;
-        border-radius: 0 0 0 6px;
-    }
-
-    table tr:last-child td:last-child {
-        -moz-border-radius: 0 0 6px 0;
-        -webkit-border-radius: 0 0 6px 0;
-        border-radius: 0 0 6px 0;
-    }
-
-    table tbody tr td {
-        border: 1px solid #c3c3c3 !important;
-    }
-</style>
 {% endblock %}
+
