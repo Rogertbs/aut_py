@@ -76,3 +76,12 @@ Este projeto é distribuído sob a licença MIT. Sinta-se à vontade para usá-l
 
 🤝 Contribuições
 Pull requests são bem-vindos! Para mudanças maiores, abra uma issue primeiro para discutir o que você gostaria de modificar.
+
+
+### Interface do Sistema
+### Tela Login
+![WhatsApp Image 2025-11-06 at 20 54 44](https://github.com/user-attachments/assets/36da265b-d55f-41d8-af9f-f4f04be95af6)
+:
+
+
+
